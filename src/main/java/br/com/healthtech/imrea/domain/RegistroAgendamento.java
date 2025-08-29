@@ -1,15 +1,37 @@
 package br.com.healthtech.imrea.domain;
 
+import com.alibaba.excel.annotation.ExcelProperty;
+
 import java.util.Date;
 
 public class RegistroAgendamento {
+
+    @ExcelProperty("Nome medico")
     private String nomeMedico;
-    private Date dataHoraAgendamento;
+
+    @ExcelProperty("Data agenda")
+    private String dataAgendamento;
+
+    @ExcelProperty("Nome paciente")
     private String nomePaciente;
+
+    @ExcelProperty("Número celular")
     private String numeroPaciente;
+
+    @ExcelProperty("Nome Profissional Executor")
     private String profissionalExecutor;
+
+    @ExcelProperty("Hora Agenda")
+    private String horaAgendamento;
+
+    @ExcelProperty("Link")
     private String linkConsulta;
+
+    @ExcelProperty("Código")
     private int codigoConsulta;
+
+    @ExcelProperty("OBS")
+    private String observacao;
 
     public String getNomeMedico() {
         return nomeMedico;
@@ -19,12 +41,12 @@ public class RegistroAgendamento {
         this.nomeMedico = nomeMedico;
     }
 
-    public Date getDataHoraAgendamento() {
-        return dataHoraAgendamento;
+    public String getDataAgendamento() {
+        return dataAgendamento;
     }
 
-    public void setDataHoraAgendamento(Date dataHoraAgendamento) {
-        this.dataHoraAgendamento = dataHoraAgendamento;
+    public void setDataAgendamento(String dataAgendamento) {
+        this.dataAgendamento = dataAgendamento;
     }
 
     public String getNomePaciente() {
@@ -51,6 +73,14 @@ public class RegistroAgendamento {
         this.profissionalExecutor = profissionalExecutor;
     }
 
+    public String getHoraAgendamento() {
+        return horaAgendamento;
+    }
+
+    public void setHoraAgendamento(String horaAgendamento) {
+        this.horaAgendamento = horaAgendamento;
+    }
+
     public String getLinkConsulta() {
         return linkConsulta;
     }
@@ -65,5 +95,13 @@ public class RegistroAgendamento {
 
     public void setCodigoConsulta(int codigoConsulta) {
         this.codigoConsulta = codigoConsulta;
+    }
+
+    public String getObservacao() {
+        return observacao;
+    }
+
+    public void setObservacao(String observacao) {
+        this.observacao = observacao;
     }
 }
