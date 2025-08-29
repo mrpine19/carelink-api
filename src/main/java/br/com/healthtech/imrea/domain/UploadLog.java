@@ -1,13 +1,14 @@
 package br.com.healthtech.imrea.domain;
 
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 
 import java.util.Date;
 import java.util.UUID;
 
 @Entity
-@Table(name = "TB_CAR_UPLOAD_LOG")
-public class UploadLog {
+//@Table(name = "TB_CAR_UPLOAD_LOG")
+public class UploadLog /*extends PanacheEntityBase*/ {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
