@@ -4,17 +4,10 @@ import br.com.healthtech.imrea.domain.RegistroAgendamento;
 import br.com.healthtech.imrea.domain.UploadLog;
 import com.alibaba.excel.EasyExcel;
 import jakarta.enterprise.context.ApplicationScoped;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.hibernate.query.named.NamedObjectRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.time.Instant;
-import java.util.Date;
 import java.util.List;
 
 @ApplicationScoped
