@@ -1,8 +1,6 @@
-package br.com.healthtech.imrea.domain;
+package br.com.healthtech.imrea.agendamento.domain;
 
 import com.alibaba.excel.annotation.ExcelProperty;
-
-import java.util.Date;
 
 public class RegistroAgendamento {
 
@@ -17,6 +15,9 @@ public class RegistroAgendamento {
 
     @ExcelProperty("Número celular")
     private String numeroPaciente;
+
+    @ExcelProperty("Especialidade")
+    private String especialidade;
 
     @ExcelProperty("Nome Profissional Executor")
     private String profissionalExecutor;
@@ -63,6 +64,14 @@ public class RegistroAgendamento {
 
     public void setNumeroPaciente(String numeroPaciente) {
         this.numeroPaciente = numeroPaciente;
+    }
+
+    public String getEspecialidade() {
+        return especialidade;
+    }
+
+    public void setEspecialidade(String especialidade) {
+        this.especialidade = especialidade;
     }
 
     public String getProfissionalExecutor() {
