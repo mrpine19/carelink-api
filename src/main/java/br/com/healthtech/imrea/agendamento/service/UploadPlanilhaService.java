@@ -1,6 +1,7 @@
 package br.com.healthtech.imrea.agendamento.service;
 
-import br.com.healthtech.imrea.agendamento.domain.Agendamento;
+import br.com.healthtech.imrea.agendamento.domain.Consulta;
+import br.com.healthtech.imrea.agendamento.domain.Profissional;
 import br.com.healthtech.imrea.agendamento.domain.RegistroAgendamento;
 import br.com.healthtech.imrea.paciente.domain.Paciente;
 import br.com.healthtech.imrea.paciente.service.PacienteService;
@@ -11,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 @ApplicationScoped
@@ -19,48 +21,60 @@ public class UploadPlanilhaService {
     private static final Logger logger = LoggerFactory.getLogger(UploadPlanilhaService.class);
 
     private final PacienteService pacienteService;
-    private final AgendamentoService agendamentoService;
+    private final ConsultaService consultaService;
+    private final ProfissionalService profissionalService;
 
-    public UploadPlanilhaService(PacienteService pacienteService, AgendamentoService agendamentoService) {
+    public UploadPlanilhaService(PacienteService pacienteService, ConsultaService consultaService, ProfissionalService profissionalService) {
         this.pacienteService = pacienteService;
-        this.agendamentoService = agendamentoService;
+        this.consultaService = consultaService;
+        this.profissionalService = profissionalService;
     }
 
-    public void processarPlanilha(FileUpload fileUpload) {
+    public List<RegistroAgendamento> processarPlanilha(FileUpload fileUpload) {
 
         String nomeArquivo = fileUpload.fileName();
         logger.info("Processando planilha do arquivo {}", nomeArquivo);
+
+        List<RegistroAgendamento> listasAgendamentos = new ArrayList<>();
         try {
             if (nomeArquivo.toLowerCase().endsWith(".xlsx")) {
-                processarXlsx(fileUpload.uploadedFile().toFile());
+                listasAgendamentos = processarXlsx(fileUpload.uploadedFile().toFile());
             }
 
         } catch (Exception e) {
             logger.error("Erro ao processar planilha");
             logger.error(e.getMessage());
         }
+
+        return listasAgendamentos;
     }
 
-    public void processarXlsx(File planilha)  {
-        List<RegistroAgendamento> listasAgendamentos;
+    public List<RegistroAgendamento> processarXlsx(File planilha)  {
+        List<RegistroAgendamento> listasAgendamentos = new ArrayList<>();
         try {
             listasAgendamentos = EasyExcel.read(planilha)
                     .head(RegistroAgendamento.class)
                     .sheet()
                     .doReadSync();
+
             for (RegistroAgendamento registroAgendamento : listasAgendamentos) {
                 Paciente paciente = new Paciente(registroAgendamento.getNomePaciente(), registroAgendamento.getNumeroPaciente());
-                pacienteService.save(paciente);
+                paciente = pacienteService.buscarOuCriarPaciente(paciente);
 
-                paciente = pacienteService.buscarPorNomeETelefone(paciente);
-                Agendamento agendamento = new Agendamento(paciente, registroAgendamento.getDataAgendamento(), registroAgendamento.getHoraAgendamento(),
+                Profissional profissional = new Profissional(registroAgendamento.getNomeMedico(), registroAgendamento.getEspecialidade());
+                profissional = profissionalService.buscarOuCriarMedico(profissional);
+
+                Consulta consulta = new Consulta(paciente, profissional, registroAgendamento.getDataAgendamento(), registroAgendamento.getHoraAgendamento(),
                                                         registroAgendamento.getLinkConsulta(), registroAgendamento.getCodigoConsulta(), registroAgendamento.getObsAgendamento());
-                agendamentoService.save(agendamento);
-            }
+                consultaService.buscarOuCriarConsulta(consulta);
+        }
 
         } catch (Exception e) {
             logger.error("Erro ao processar a planilha: " + e.getMessage(), e);
+            return null;
         }
+
+        return listasAgendamentos;
     }
 
 }

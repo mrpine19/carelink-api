@@ -4,13 +4,19 @@ import br.com.healthtech.imrea.paciente.domain.Paciente;
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name="TB_CAR_CONSULTA")
-public class Agendamento extends PanacheEntity {
+public class Consulta extends PanacheEntity {
 
     @ManyToOne
     @JoinColumn(name = "id_paciente")
     public Paciente paciente;
+
+    @ManyToOne
+    @JoinColumn(name="id_profissional")
+    public Profissional profissional;
 
     @Column(name="data_agenda")
     public String dataAgenda;
@@ -25,17 +31,21 @@ public class Agendamento extends PanacheEntity {
     public int codigoConsulta;
 
     @Column(name="obs_agendamento")
-    public String obsAgendamento;
+    public String obsConsulta;
 
-    public Agendamento() {
+    @Column(name="dt_criacao_consulta")
+    public LocalDateTime dtCriacaoConsulta;
+
+    public Consulta() {
     }
 
-    public Agendamento(Paciente paciente, String dataAgenda, String horaAgenda, String linkConsulta, int codigoConsulta, String obsAgendamento) {
+    public Consulta(Paciente paciente, Profissional profissional, String dataAgenda, String horaAgenda, String linkConsulta, int codigoConsulta, String obsConsulta) {
         this.paciente = paciente;
+        this.profissional = profissional;
         this.dataAgenda = dataAgenda;
         this.horaAgenda = horaAgenda;
         this.linkConsulta = linkConsulta;
         this.codigoConsulta = codigoConsulta;
-        this.obsAgendamento = obsAgendamento;
+        this.obsConsulta = obsConsulta;
     }
 }
