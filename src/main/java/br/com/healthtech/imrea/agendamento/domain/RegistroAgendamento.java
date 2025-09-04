@@ -32,7 +32,7 @@ public class RegistroAgendamento {
     private int codigoConsulta;
 
     @ExcelProperty("OBS")
-    private String observacao;
+    private String obsAgendamento;
 
     public String getNomeMedico() {
         return nomeMedico;
@@ -106,11 +106,11 @@ public class RegistroAgendamento {
         this.codigoConsulta = codigoConsulta;
     }
 
-    public String getObservacao() {
-        return observacao;
+    public String getObsAgendamento() {
+        return obsAgendamento;
     }
 
-    public void setObservacao(String observacao) {
-        this.observacao = observacao;
+    public void setObsAgendamento(String obsAgendamento) {
+        this.obsAgendamento = obsAgendamento;
     }
 }

@@ -1,5 +1,6 @@
 package br.com.healthtech.imrea.agendamento.service;
 
+import br.com.healthtech.imrea.agendamento.domain.Agendamento;
 import br.com.healthtech.imrea.agendamento.domain.RegistroAgendamento;
 import br.com.healthtech.imrea.paciente.domain.Paciente;
 import br.com.healthtech.imrea.paciente.service.PacienteService;
@@ -18,9 +19,11 @@ public class UploadPlanilhaService {
     private static final Logger logger = LoggerFactory.getLogger(UploadPlanilhaService.class);
 
     private final PacienteService pacienteService;
+    private final AgendamentoService agendamentoService;
 
-    public UploadPlanilhaService(PacienteService pacienteService) {
+    public UploadPlanilhaService(PacienteService pacienteService, AgendamentoService agendamentoService) {
         this.pacienteService = pacienteService;
+        this.agendamentoService = agendamentoService;
     }
 
     public void processarPlanilha(FileUpload fileUpload) {
@@ -48,6 +51,10 @@ public class UploadPlanilhaService {
             for (RegistroAgendamento registroAgendamento : listasAgendamentos) {
                 Paciente paciente = new Paciente(registroAgendamento.getNomePaciente(), registroAgendamento.getNumeroPaciente());
                 pacienteService.save(paciente);
+
+                Agendamento agendamento = new Agendamento(paciente, registroAgendamento.getDataAgendamento(), registroAgendamento.getHoraAgendamento(),
+                                                        registroAgendamento.getLinkConsulta(), registroAgendamento.getCodigoConsulta(), registroAgendamento.getObsAgendamento());
+                agendamentoService.save(agendamento);
             }
 
         } catch (Exception e) {
