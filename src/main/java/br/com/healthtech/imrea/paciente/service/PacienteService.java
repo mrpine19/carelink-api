@@ -12,7 +12,7 @@ import java.util.UUID;
 @ApplicationScoped
 public class PacienteService {
 
-    private static final Logger logger = LoggerFactory.getLogger(UploadPlanilhaService.class);
+    private static final Logger logger = LoggerFactory.getLogger(PacienteService.class);
 
     @Transactional
     public void save(Paciente paciente){
