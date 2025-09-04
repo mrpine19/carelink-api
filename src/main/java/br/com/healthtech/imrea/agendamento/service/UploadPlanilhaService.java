@@ -52,6 +52,7 @@ public class UploadPlanilhaService {
                 Paciente paciente = new Paciente(registroAgendamento.getNomePaciente(), registroAgendamento.getNumeroPaciente());
                 pacienteService.save(paciente);
 
+                paciente = pacienteService.buscarPorNomeETelefone(paciente);
                 Agendamento agendamento = new Agendamento(paciente, registroAgendamento.getDataAgendamento(), registroAgendamento.getHoraAgendamento(),
                                                         registroAgendamento.getLinkConsulta(), registroAgendamento.getCodigoConsulta(), registroAgendamento.getObsAgendamento());
                 agendamentoService.save(agendamento);

@@ -1,7 +1,6 @@
 package br.com.healthtech.imrea.agendamento.service;
 
 import br.com.healthtech.imrea.agendamento.domain.Agendamento;
-import br.com.healthtech.imrea.paciente.service.PacienteService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
@@ -18,6 +17,18 @@ public class AgendamentoService {
             throw new IllegalArgumentException("Infomações de agendamento inválidas");
         }
 
-        agendamento.persist();
+        if(buscarConsultaPorDataEHora(agendamento) == null){
+            agendamento.persist();
+            logger.info("Agendamento marcado para paciente {}, na data {} às {}", agendamento.paciente.nomePaciente,
+                    agendamento.dataAgenda, agendamento.horaAgenda);
+        }
+        else {
+            logger.info("O paciente {} já possui um agendamento para a data {} às {}", agendamento.paciente.nomePaciente,
+                    agendamento.dataAgenda, agendamento.horaAgenda);
+        }
+    }
+
+    public Agendamento buscarConsultaPorDataEHora(Agendamento agendamento){
+        return Agendamento.find("dataAgenda = ?1 and horaAgenda = ?2", agendamento.dataAgenda, agendamento.horaAgenda).firstResult();
     }
 }
