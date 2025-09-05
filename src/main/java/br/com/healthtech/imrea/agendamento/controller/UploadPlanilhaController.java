@@ -2,6 +2,7 @@ package br.com.healthtech.imrea.agendamento.controller;
 
 import br.com.healthtech.imrea.agendamento.domain.FormData;
 import br.com.healthtech.imrea.agendamento.domain.RegistroAgendamento;
+import br.com.healthtech.imrea.agendamento.dto.UploadDTO;
 import br.com.healthtech.imrea.agendamento.service.UploadPlanilhaService;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
@@ -23,8 +24,8 @@ public class UploadPlanilhaController {
     @POST
     @Path("/receber")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    public List<RegistroAgendamento> receberArquivo(FormData arquivoRecebido) {
-
-        return uploadPlanilhaService.processarPlanilha(arquivoRecebido.fileUpload);
+    public Response receberArquivo(FormData arquivoRecebido) {
+        UploadDTO uploadDTO = uploadPlanilhaService.processarPlanilha(arquivoRecebido.fileUpload);
+        return Response.ok(uploadDTO).build();
     }
 }
