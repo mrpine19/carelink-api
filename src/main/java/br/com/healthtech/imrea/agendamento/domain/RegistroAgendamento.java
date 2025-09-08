@@ -2,13 +2,15 @@ package br.com.healthtech.imrea.agendamento.domain;
 
 import com.alibaba.excel.annotation.ExcelProperty;
 
+import java.util.Date;
+
 public class RegistroAgendamento {
 
     @ExcelProperty("Nome medico")
     private String nomeMedico;
 
     @ExcelProperty("Data agenda")
-    private String dataAgendamento;
+    private Date dataAgendamento;
 
     @ExcelProperty("Nome paciente")
     private String nomePaciente;
@@ -29,7 +31,7 @@ public class RegistroAgendamento {
     private String linkConsulta;
 
     @ExcelProperty("Código")
-    private int codigoConsulta;
+    private String codigoConsulta;
 
     @ExcelProperty("OBS")
     private String obsAgendamento;
@@ -42,11 +44,11 @@ public class RegistroAgendamento {
         this.nomeMedico = nomeMedico;
     }
 
-    public String getDataAgendamento() {
+    public Date getDataAgendamento() {
         return dataAgendamento;
     }
 
-    public void setDataAgendamento(String dataAgendamento) {
+    public void setDataAgendamento(Date dataAgendamento) {
         this.dataAgendamento = dataAgendamento;
     }
 
@@ -98,11 +100,11 @@ public class RegistroAgendamento {
         this.linkConsulta = linkConsulta;
     }
 
-    public int getCodigoConsulta() {
+    public String getCodigoConsulta() {
         return codigoConsulta;
     }
 
-    public void setCodigoConsulta(int codigoConsulta) {
+    public void setCodigoConsulta(String codigoConsulta) {
         this.codigoConsulta = codigoConsulta;
     }
 

@@ -1,24 +1,29 @@
 package br.com.healthtech.imrea.paciente.domain;
 
-import io.quarkus.hibernate.orm.panache.PanacheEntity;
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name="TB_CAR_PACIENTE")
-public class Paciente extends PanacheEntity {
+public class Paciente extends PanacheEntityBase {
 
-    @Column(name="nome_paciente_mascarado")
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Column(name="id_paciente")
+    public Long idPaciente;
+
+    @Column(name="nome_paciente")
     public String nomePaciente;
 
-    @Column(name="telefoe_paciente_mascarado")
+    @Column(name="telefone_paciente")
     public String telefonePaciente;
 
-    @Column(name="idade_paciente_marcarado")
+    @Column(name="idade_paciente")
     public int idadePaciente;
 
-    @Column(name="dt_criacao_paciente")
+    @Column(name="data_criacao")
     public LocalDateTime dtCriacaoPaciente;
 
     public Paciente() {

@@ -7,6 +7,7 @@ import br.com.healthtech.imrea.agendamento.domain.UploadLog;
 import br.com.healthtech.imrea.agendamento.dto.UploadDTO;
 import br.com.healthtech.imrea.paciente.domain.Paciente;
 import br.com.healthtech.imrea.paciente.service.PacienteService;
+import br.com.healthtech.imrea.usuario.service.UsuarioService;
 import com.alibaba.excel.EasyExcel;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
@@ -26,11 +27,13 @@ public class UploadPlanilhaService {
     private final PacienteService pacienteService;
     private final ConsultaService consultaService;
     private final ProfissionalService profissionalService;
+    private final UsuarioService usuarioService;
 
-    public UploadPlanilhaService(PacienteService pacienteService, ConsultaService consultaService, ProfissionalService profissionalService) {
+    public UploadPlanilhaService(PacienteService pacienteService, ConsultaService consultaService, ProfissionalService profissionalService, UsuarioService usuarioService) {
         this.pacienteService = pacienteService;
         this.consultaService = consultaService;
         this.profissionalService = profissionalService;
+        this.usuarioService = usuarioService;
     }
 
     @Transactional
@@ -40,6 +43,7 @@ public class UploadPlanilhaService {
         uploadLog.dataHoraUpload = new Date();
         uploadLog.nomeArquivo = fileUpload.fileName();
         uploadLog.statusUpload = "EM_PROCESSAMENTO";
+        uploadLog.usuario = usuarioService.buscarUsuarioTeste();
         uploadLog.persist();
 
         String nomeArquivo = fileUpload.fileName();

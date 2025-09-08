@@ -1,15 +1,23 @@
 package br.com.healthtech.imrea.agendamento.domain;
 
-import io.quarkus.hibernate.orm.panache.PanacheEntity;
+import br.com.healthtech.imrea.usuario.domain.Usuario;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 
 import java.util.Date;
-import java.util.UUID;
 
 @Entity
 @Table(name = "TB_CAR_UPLOAD_LOG")
-public class UploadLog extends PanacheEntity {
+public class UploadLog extends PanacheEntityBase {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Column(name="id_upload")
+    public Long idUpload;
+
+    @ManyToOne()
+    @JoinColumn(name="id_usuario")
+    public Usuario usuario;
 
     @Column(name="data_hora_upload")
     public Date dataHoraUpload;
