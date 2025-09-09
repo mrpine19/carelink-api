@@ -24,11 +24,12 @@ public class Consulta extends PanacheEntityBase {
     @JoinColumn(name="id_profissional")
     public Profissional profissional;
 
+    @ManyToOne
+    @JoinColumn(name="id_upload")
+    public UploadLog uploadLog;
+
     @Column(name="data_agenda")
     public Date dataAgenda;
-
-    @Column(name="hora_agenda")
-    public String horaAgenda;
 
     @Column(name="link_acesso")
     public String linkConsulta;
@@ -45,11 +46,11 @@ public class Consulta extends PanacheEntityBase {
     public Consulta() {
     }
 
-    public Consulta(Paciente paciente, Profissional profissional, Date dataAgenda, String horaAgenda, String linkConsulta, String codigoConsulta, String obsConsulta) {
+    public Consulta(Paciente paciente, Profissional profissional, UploadLog uploadLog, Date dataAgenda, String linkConsulta, String codigoConsulta, String obsConsulta) {
         this.paciente = paciente;
         this.profissional = profissional;
+        this.uploadLog = uploadLog;
         this.dataAgenda = dataAgenda;
-        this.horaAgenda = horaAgenda;
         this.linkConsulta = linkConsulta;
         this.codigoConsulta = codigoConsulta;
         this.obsConsulta = obsConsulta;
