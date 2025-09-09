@@ -15,22 +15,22 @@ public class ConsultaService {
 
     @Transactional
     public void buscarOuCriarConsulta(Consulta consulta){
-        if(consulta.dataAgenda == null || consulta.horaAgenda == null || consulta.linkConsulta == null){
+        if(consulta.dataAgenda == null || consulta.linkConsulta == null){
             throw new IllegalArgumentException("Infomações de agendamento inválidas");
         }
 
-        Consulta consultaExistente = Consulta.find("dataAgenda = ?1 and horaAgenda = ?2 and paciente = ?3 and profissional = ?4", consulta.dataAgenda, consulta.horaAgenda,
+        Consulta consultaExistente = Consulta.find("dataAgenda = ?1 and paciente = ?2 and profissional = ?3", consulta.dataAgenda,
                                                     consulta.paciente, consulta.profissional).firstResult();
 
         if(consultaExistente == null){
             consulta.dtCriacaoConsulta = LocalDateTime.now();
             consulta.persist();
-            logger.info("Agendamento marcado para paciente {}, na data {} às {}", consulta.paciente.nomePaciente,
-                    consulta.dataAgenda, consulta.horaAgenda);
+            logger.info("Agendamento marcado para paciente {}, na data {}", consulta.paciente.nomePaciente,
+                    consulta.dataAgenda);
         }
         else {
-            logger.info("O paciente {} já possui um agendamento para a data {} às {}", consulta.paciente.nomePaciente,
-                    consulta.dataAgenda, consulta.horaAgenda);
+            logger.info("O paciente {} já possui um agendamento para a data {}", consulta.paciente.nomePaciente,
+                    consulta.dataAgenda);
         }
     }
 

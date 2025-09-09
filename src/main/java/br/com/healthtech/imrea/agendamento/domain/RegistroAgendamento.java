@@ -10,7 +10,7 @@ public class RegistroAgendamento {
     private String nomeMedico;
 
     @ExcelProperty("Data agenda")
-    private Date dataAgendamento;
+    private String dataAgendamento;
 
     @ExcelProperty("Nome paciente")
     private String nomePaciente;
@@ -44,11 +44,11 @@ public class RegistroAgendamento {
         this.nomeMedico = nomeMedico;
     }
 
-    public Date getDataAgendamento() {
+    public String getDataAgendamento() {
         return dataAgendamento;
     }
 
-    public void setDataAgendamento(Date dataAgendamento) {
+    public void setDataAgendamento(String dataAgendamento) {
         this.dataAgendamento = dataAgendamento;
     }
 

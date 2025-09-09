@@ -16,6 +16,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 
@@ -82,7 +85,12 @@ public class UploadPlanilhaService {
                 Profissional profissional = new Profissional(registroAgendamento.getNomeMedico(), registroAgendamento.getEspecialidade());
                 profissional = profissionalService.buscarOuCriarMedico(profissional);
 
-                Consulta consulta = new Consulta(paciente, profissional, registroAgendamento.getDataAgendamento(), registroAgendamento.getHoraAgendamento(),
+                String dataHoraCompleta = registroAgendamento.getDataAgendamento() + " " + registroAgendamento.getHoraAgendamento();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+                LocalDateTime localDateTime = LocalDateTime.parse(dataHoraCompleta.trim(), formatter);
+                Date dataAgenda = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+
+                Consulta consulta = new Consulta(paciente, profissional, uploadLog, dataAgenda,
                         registroAgendamento.getLinkConsulta(), registroAgendamento.getCodigoConsulta(), registroAgendamento.getObsAgendamento());
                 consultaService.buscarOuCriarConsulta(consulta);
 
