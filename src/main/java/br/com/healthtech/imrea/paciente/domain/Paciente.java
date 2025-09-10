@@ -17,13 +17,13 @@ public class Paciente extends PanacheEntityBase {
     @Column(name="nome_paciente")
     public String nomePaciente;
 
-    @Column(name="telefone_paciente")
+    @Column(name="celular_paciente")
     public String telefonePaciente;
 
     @Column(name="idade_paciente")
     public int idadePaciente;
 
-    @Column(name="data_criacao")
+    @Column(name="dt_criacao")
     public LocalDateTime dtCriacaoPaciente;
 
     public Paciente() {

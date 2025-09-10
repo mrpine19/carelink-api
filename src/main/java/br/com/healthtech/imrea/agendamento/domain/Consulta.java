@@ -40,7 +40,7 @@ public class Consulta extends PanacheEntityBase {
     @Column(name="obs_agendamento")
     public String obsConsulta;
 
-    @Column(name="data_criacao")
+    @Column(name="dt_criacao")
     public LocalDateTime dtCriacaoConsulta;
 
     public Consulta() {
