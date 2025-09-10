@@ -19,7 +19,7 @@ public class Profissional extends PanacheEntityBase {
     @Column(name="especialidade_profissional")
     public String especialidadeProfissional;
 
-    @Column(name="dt_criacao_profissional")
+    @Column(name="dt_criacao")
     public LocalDateTime dtCriacaoProfissional;
 
     public Profissional() {

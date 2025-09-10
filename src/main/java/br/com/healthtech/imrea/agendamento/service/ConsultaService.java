@@ -6,7 +6,10 @@ import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
 
 @ApplicationScoped
 public class ConsultaService {
@@ -32,6 +35,14 @@ public class ConsultaService {
             logger.info("O paciente {} já possui um agendamento para a data {}", consulta.paciente.nomePaciente,
                     consulta.dataAgenda);
         }
+    }
+
+    public List<Consulta> buscarConsultasMarcadasDiaSeguinte() {
+        LocalDate amanha = LocalDate.now().plusDays(1);
+        LocalDateTime inicioDoDia = amanha.atStartOfDay();
+        LocalDateTime fimDoDia = amanha.atTime(LocalTime.MAX);
+
+        return Consulta.find("dataAgenda >= ?1 and dataAgenda <= ?2", inicioDoDia, fimDoDia).list();
     }
 
 }
