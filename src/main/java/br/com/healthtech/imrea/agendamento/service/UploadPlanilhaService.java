@@ -5,7 +5,9 @@ import br.com.healthtech.imrea.agendamento.domain.Profissional;
 import br.com.healthtech.imrea.agendamento.domain.RegistroAgendamento;
 import br.com.healthtech.imrea.agendamento.domain.UploadLog;
 import br.com.healthtech.imrea.agendamento.dto.UploadDTO;
+import br.com.healthtech.imrea.paciente.domain.InteracaoAutomatizada;
 import br.com.healthtech.imrea.paciente.domain.Paciente;
+import br.com.healthtech.imrea.paciente.service.InteracaoAutomatizadaService;
 import br.com.healthtech.imrea.paciente.service.PacienteService;
 import br.com.healthtech.imrea.usuario.service.UsuarioService;
 import com.alibaba.excel.EasyExcel;
@@ -31,12 +33,14 @@ public class UploadPlanilhaService {
     private final ConsultaService consultaService;
     private final ProfissionalService profissionalService;
     private final UsuarioService usuarioService;
+    private final InteracaoAutomatizadaService interacaoService;
 
-    public UploadPlanilhaService(PacienteService pacienteService, ConsultaService consultaService, ProfissionalService profissionalService, UsuarioService usuarioService) {
+    public UploadPlanilhaService(PacienteService pacienteService, ConsultaService consultaService, ProfissionalService profissionalService, UsuarioService usuarioService, InteracaoAutomatizadaService interacaoService) {
         this.pacienteService = pacienteService;
         this.consultaService = consultaService;
         this.profissionalService = profissionalService;
         this.usuarioService = usuarioService;
+        this.interacaoService = interacaoService;
     }
 
     @Transactional
@@ -93,6 +97,8 @@ public class UploadPlanilhaService {
                 Consulta consulta = new Consulta(paciente, profissional, uploadLog, dataAgenda,
                         registroAgendamento.getLinkConsulta(), registroAgendamento.getCodigoConsulta(), registroAgendamento.getObsAgendamento());
                 consultaService.buscarOuCriarConsulta(consulta);
+
+                interacaoService.buscarOuCriarInteracao(consulta);
 
                 uploadLog.numRegistrosProcessados++;
 

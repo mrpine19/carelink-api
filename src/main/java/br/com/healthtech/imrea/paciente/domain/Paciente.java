@@ -10,7 +10,8 @@ import java.time.LocalDateTime;
 public class Paciente extends PanacheEntityBase {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(name = "pacienteSequence", sequenceName = "TB_CAR_PACIENTE_id_paciente_SEQ", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "pacienteSequence")
     @Column(name="id_paciente")
     public Long idPaciente;
 

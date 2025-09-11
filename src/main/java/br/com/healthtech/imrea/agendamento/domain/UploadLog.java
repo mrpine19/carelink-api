@@ -11,7 +11,8 @@ import java.util.Date;
 public class UploadLog extends PanacheEntityBase {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(name = "uploadSequence", sequenceName = "TB_CAR_UPLOAD_LOG_id_upload_SEQ", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "uploadSequence")
     @Column(name="id_upload")
     public Long idUpload;
 
