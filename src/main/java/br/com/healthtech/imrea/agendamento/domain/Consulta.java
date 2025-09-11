@@ -12,9 +12,10 @@ import java.util.Date;
 public class Consulta extends PanacheEntityBase {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(name = "consultaSequence", sequenceName = "TB_CAR_CONSULTA_id_consulta_SEQ", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "consultaSequence")
     @Column(name="id_consulta")
-    private Long idConsulta;
+    public Long idConsulta;
 
     @ManyToOne
     @JoinColumn(name = "id_paciente")
