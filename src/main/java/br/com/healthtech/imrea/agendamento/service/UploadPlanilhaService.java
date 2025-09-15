@@ -21,6 +21,7 @@ import java.io.File;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -44,42 +45,37 @@ public class UploadPlanilhaService {
     }
 
     @Transactional
-    public UploadDTO processarPlanilha(FileUpload fileUpload) {
-
-        UploadLog uploadLog = new UploadLog();
-        uploadLog.dataHoraUpload = new Date();
-        uploadLog.nomeArquivo = fileUpload.fileName();
-        uploadLog.statusUpload = "EM_PROCESSAMENTO";
-        uploadLog.usuario = usuarioService.buscarUsuarioTeste();
-        uploadLog.persist();
+    public List<RegistroAgendamento> processarPlanilha(FileUpload fileUpload) { // <-- MUDANÇA 1: Retornar a lista
 
         String nomeArquivo = fileUpload.fileName();
         logger.info("Processando planilha do arquivo {}", nomeArquivo);
 
         try {
             if (nomeArquivo.toLowerCase().endsWith(".xlsx")) {
-                processarXlsx(fileUpload.uploadedFile().toFile(), uploadLog);
+                List<RegistroAgendamento> listasAgendamentos = EasyExcel.read(fileUpload.uploadedFile().toFile())
+                        .head(RegistroAgendamento.class)
+                        .sheet()
+                        .doReadSync();
+                return listasAgendamentos;
             } else {
-                uploadLog.statusUpload = "FALHA - FORMATO INVALIDO";
-                uploadLog.numRegistrosComErro = 1;
+                logger.info("Formato de arquivo inválido");
             }
 
         } catch (Exception e) {
             logger.error("Erro ao processar planilha");
             logger.error(e.getMessage());
-
-            uploadLog.statusUpload = "FALHA - ERRO INTERNO";
-            uploadLog.detalhesErros = e.getMessage();
         }
 
-        return new UploadDTO(uploadLog.statusUpload, uploadLog.numRegistrosProcessados, uploadLog.numRegistrosComErro);
+        return Collections.emptyList();
     }
 
-    public void processarXlsx(File planilha, UploadLog uploadLog)  {
-        List<RegistroAgendamento> listasAgendamentos = EasyExcel.read(planilha)
-                                                        .head(RegistroAgendamento.class)
-                                                        .sheet()
-                                                        .doReadSync();
+    public void salvarDadosAgendamento(List<RegistroAgendamento> listasAgendamentos)  {
+
+        UploadLog uploadLog = new UploadLog();
+        uploadLog.dataHoraUpload = new Date();
+        uploadLog.statusUpload = "EM_PROCESSAMENTO";
+        uploadLog.usuario = usuarioService.buscarUsuarioTeste();
+        uploadLog.persist();
 
         for (RegistroAgendamento registroAgendamento : listasAgendamentos) {
             try {
