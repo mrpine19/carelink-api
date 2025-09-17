@@ -69,6 +69,7 @@ public class UploadPlanilhaService {
         return Collections.emptyList();
     }
 
+    @Transactional
     public void salvarDadosAgendamento(List<RegistroAgendamento> listasAgendamentos)  {
 
         UploadLog uploadLog = new UploadLog();
