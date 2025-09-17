@@ -12,6 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @ApplicationScoped
@@ -50,8 +52,19 @@ public class InteracaoAutomatizadaService {
         for (Consulta consulta : consultasDeAmanha){
             InteracaoAutomatizada interacaoAutomatizada = buscarOuCriarInteracao(consulta);
             if (interacaoAutomatizada.statusInteracao == null){
+                DateTimeFormatter formatterData = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                DateTimeFormatter formatterHora = DateTimeFormatter.ofPattern("HH:mm");
+                String dataFormatada = consulta.dataAgenda.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().format(formatterData);
+                String horaFormatada = consulta.dataAgenda.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().format(formatterHora);
+
+                // Construção da mensagem completa
                 String to = "55" + consulta.paciente.telefonePaciente.replaceAll("[^0-9]", "");
-                String body = "Olá "+consulta.paciente.nomePaciente+"! Você tem uma consulta agendada amanhã às "+consulta.dataAgenda+"!";
+                String body = "Olá " + consulta.paciente.nomePaciente + "!\n\n" +
+                        "Este é um lembrete da sua teleconsulta agendada com o(a) " + consulta.profissional.nomeProfissional + " do IMREA.\n\n" +
+                        "Detalhes da sua consulta:\n" +
+                        "- Data: *" + dataFormatada + "*\n" +
+                        "- Horário: *" + horaFormatada + "*\n\n" +
+                        "Amanhã, 1 hora antes do horário, enviaremos outro lembrete. Em caso de dúvidas, nossa equipe está aqui para te ajudar.";
                 chatbotService.sendMessage(to, body);
 
                 interacaoAutomatizada.statusInteracao = "Lembrete enviado";
