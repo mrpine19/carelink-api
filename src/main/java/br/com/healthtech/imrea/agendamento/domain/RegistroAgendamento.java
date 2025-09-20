@@ -18,6 +18,15 @@ public class RegistroAgendamento {
     @ExcelProperty("Número celular")
     private String numeroPaciente;
 
+    @ExcelProperty("Data nascimento")
+    private String dataNascimentoPaciente;
+
+    @ExcelProperty("Nome acompanhante")
+    private String nomeAcompanhante;
+
+    @ExcelProperty("Número acompanhante")
+    private String numeroAcompanhante;
+
     @ExcelProperty("Especialidade")
     private String especialidade;
 
@@ -66,6 +75,30 @@ public class RegistroAgendamento {
 
     public void setNumeroPaciente(String numeroPaciente) {
         this.numeroPaciente = numeroPaciente;
+    }
+
+    public String getDataNascimentoPaciente() {
+        return dataNascimentoPaciente;
+    }
+
+    public void setDataNascimentoPaciente(String dataNascimentoPaciente) {
+        this.dataNascimentoPaciente = dataNascimentoPaciente;
+    }
+
+    public String getNomeAcompanhante() {
+        return nomeAcompanhante;
+    }
+
+    public void setNomeAcompanhante(String nomeAcompanhante) {
+        this.nomeAcompanhante = nomeAcompanhante;
+    }
+
+    public String getNumeroAcompanhante() {
+        return numeroAcompanhante;
+    }
+
+    public void setNumeroAcompanhante(String numeroAcompanhante) {
+        this.numeroAcompanhante = numeroAcompanhante;
     }
 
     public String getEspecialidade() {
