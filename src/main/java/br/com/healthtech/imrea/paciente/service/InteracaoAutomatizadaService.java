@@ -85,11 +85,12 @@ public class InteracaoAutomatizadaService {
         String horaFormatada = formatarHora(consulta.dataAgenda);
 
         return "Olá " + nomeDestinatario + "!\n\n" +
-                "Este é um lembrete da sua teleconsulta agendada com o(a) " + consulta.profissional.nomeProfissional + " do IMREA.\n\n" +
+                "Este é um lembrete da sua teleconsulta agendada de "+consulta.profissional.especialidadeProfissional+" com o(a) " + consulta.profissional.nomeProfissional + " do IMREA.\n\n" +
                 "Detalhes da sua consulta:\n" +
+                "Paciente: " + consulta.paciente.nomePaciente + "\n" +
                 "- Data: *" + dataFormatada + "*\n" +
                 "- Horário: *" + horaFormatada + "*\n\n" +
-                "Amanhã, 1 hora antes do horário, enviaremos outro lembrete. Em caso de dúvidas, nossa equipe está aqui para te ajudar.";
+                "Amanhã, 1 hora antes do horário, enviaremos outro lembrete com mais informações. Em caso de dúvidas, nossa equipe está aqui para te ajudar.";
     }
 
     private String formatarData(Date data) {
