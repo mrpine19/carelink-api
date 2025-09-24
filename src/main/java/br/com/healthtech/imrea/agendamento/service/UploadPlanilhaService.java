@@ -111,8 +111,8 @@ public class UploadPlanilhaService {
     @Transactional
     public void processarUmRegistroComTransacao(RegistroAgendamento registro, UploadLog uploadLog) {
         try {
-            SimpleDateFormat formatterDataNascimento = new SimpleDateFormat("dd/MM/yyyy");
-            Date dataNascimentoPaciente = formatterDataNascimento.parse(registro.getDataNascimentoPaciente());
+            Date dataNascimentoPaciente = converterStringDeData(registro.getDataNascimentoPaciente());
+
             Paciente paciente = new Paciente(
                     registro.getNomePaciente(),
                     registro.getNumeroPaciente(),
@@ -146,11 +146,24 @@ public class UploadPlanilhaService {
         }
     }
 
+    private Date converterStringDeData(String dataString) throws ParseException {
+        SimpleDateFormat formatoEntrada = new SimpleDateFormat("yyyy/MM/dd");
+        Date data = formatoEntrada.parse(dataString);
+        return data;
+    }
+
     private Date converterDataHora(String data, String hora) {
         try {
-            String dataHoraCompleta = data + " " + hora;
+            // Converte a data do formato yyyy/MM/dd para dd/MM/yyyy antes de concatenar
+            SimpleDateFormat formatoEntrada = new SimpleDateFormat("yyyy/MM/dd");
+            SimpleDateFormat formatoSaida = new SimpleDateFormat("dd/MM/yyyy");
+            Date dataConvertida = formatoEntrada.parse(data);
+            String dataFormatada = formatoSaida.format(dataConvertida);
+
+            String dataHoraCompleta = dataFormatada + " " + hora;
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy H:mm");
             LocalDateTime localDateTime = LocalDateTime.parse(dataHoraCompleta.trim(), formatter);
+
             return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
         } catch (Exception e) {
             throw new IllegalArgumentException("Erro ao converter data e hora. Formato esperado: dd/MM/yyyy H:mm", e);
