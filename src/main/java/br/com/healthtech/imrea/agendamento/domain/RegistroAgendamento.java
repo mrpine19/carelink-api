@@ -30,9 +30,6 @@ public class RegistroAgendamento {
     @ExcelProperty("Especialidade")
     private String especialidade;
 
-    @ExcelProperty("Nome Profissional Executor")
-    private String profissionalExecutor;
-
     @ExcelProperty("Hora Agenda")
     private String horaAgendamento;
 
@@ -107,14 +104,6 @@ public class RegistroAgendamento {
 
     public void setEspecialidade(String especialidade) {
         this.especialidade = especialidade;
-    }
-
-    public String getProfissionalExecutor() {
-        return profissionalExecutor;
-    }
-
-    public void setProfissionalExecutor(String profissionalExecutor) {
-        this.profissionalExecutor = profissionalExecutor;
     }
 
     public String getHoraAgendamento() {
