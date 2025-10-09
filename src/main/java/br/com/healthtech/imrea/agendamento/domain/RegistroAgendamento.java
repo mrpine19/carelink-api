@@ -18,11 +18,17 @@ public class RegistroAgendamento {
     @ExcelProperty("Número celular")
     private String numeroPaciente;
 
+    @ExcelProperty("Data nascimento")
+    private String dataNascimentoPaciente;
+
+    @ExcelProperty("Nome acompanhante")
+    private String nomeAcompanhante;
+
+    @ExcelProperty("Número acompanhante")
+    private String numeroAcompanhante;
+
     @ExcelProperty("Especialidade")
     private String especialidade;
-
-    @ExcelProperty("Nome Profissional Executor")
-    private String profissionalExecutor;
 
     @ExcelProperty("Hora Agenda")
     private String horaAgendamento;
@@ -68,20 +74,36 @@ public class RegistroAgendamento {
         this.numeroPaciente = numeroPaciente;
     }
 
+    public String getDataNascimentoPaciente() {
+        return dataNascimentoPaciente;
+    }
+
+    public void setDataNascimentoPaciente(String dataNascimentoPaciente) {
+        this.dataNascimentoPaciente = dataNascimentoPaciente;
+    }
+
+    public String getNomeAcompanhante() {
+        return nomeAcompanhante;
+    }
+
+    public void setNomeAcompanhante(String nomeAcompanhante) {
+        this.nomeAcompanhante = nomeAcompanhante;
+    }
+
+    public String getNumeroAcompanhante() {
+        return numeroAcompanhante;
+    }
+
+    public void setNumeroAcompanhante(String numeroAcompanhante) {
+        this.numeroAcompanhante = numeroAcompanhante;
+    }
+
     public String getEspecialidade() {
         return especialidade;
     }
 
     public void setEspecialidade(String especialidade) {
         this.especialidade = especialidade;
-    }
-
-    public String getProfissionalExecutor() {
-        return profissionalExecutor;
-    }
-
-    public void setProfissionalExecutor(String profissionalExecutor) {
-        this.profissionalExecutor = profissionalExecutor;
     }
 
     public String getHoraAgendamento() {

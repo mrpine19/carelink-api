@@ -9,7 +9,8 @@ import java.time.LocalDateTime;
 public class Profissional extends PanacheEntityBase {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(name = "profissionalSequence", sequenceName = "TB_CAR_PROFISSIONAL_SAUDE_id_profissional_SEQ", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "profissionalSequence")
     @Column(name="id_profissional")
     public Long idProfissional;
 
