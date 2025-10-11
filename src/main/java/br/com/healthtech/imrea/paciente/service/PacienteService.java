@@ -1,6 +1,7 @@
 package br.com.healthtech.imrea.paciente.service;
 
 import br.com.healthtech.imrea.paciente.domain.Paciente;
+import br.com.healthtech.imrea.paciente.dto.PacienteDTO;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
@@ -12,6 +13,12 @@ import java.time.LocalDateTime;
 public class PacienteService {
 
     private static final Logger logger = LoggerFactory.getLogger(PacienteService.class);
+
+    private final CuidadorService cuidadorService;
+
+    public PacienteService(CuidadorService cuidadorService) {
+        this.cuidadorService = cuidadorService;
+    }
 
     @Transactional
     public Paciente buscarOuCriarPaciente(Paciente paciente){
@@ -30,4 +37,20 @@ public class PacienteService {
         }
     }
 
+    @Transactional
+    public PacienteDTO buscarPacientePorId(Long idPaciente) {
+        if (idPaciente == null || idPaciente <= 0) {
+            throw new IllegalArgumentException("ID do paciente inválido");
+        }
+        Paciente paciente = Paciente.findById(idPaciente);
+        if (paciente == null)
+            throw new IllegalArgumentException("Paciente não encontrado");
+
+        PacienteDTO pacienteDTO = new PacienteDTO();
+        pacienteDTO.setIdPaciente(paciente.idPaciente);
+        pacienteDTO.setNomePaciente(paciente.nomePaciente);
+        pacienteDTO.setTelefonePaciente(paciente.telefonePaciente);
+        pacienteDTO.setCuidador(cuidadorService.buscarCuidadoresPorPaciente(idPaciente));
+        return pacienteDTO;
+    }
 }
