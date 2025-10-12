@@ -1,17 +1,17 @@
 package br.com.healthtech.imrea.paciente.dto;
 
-public class LinhaDoTempoDTO {
-    private long idLinhaDoTempo;
+public abstract class LinhaDoTempoDTO {
+    private String id;
     private String tipo;
     private String data;
-    private String titulo;
+    private String hora;
 
-    public long getIdLinhaDoTempo() {
-        return idLinhaDoTempo;
+    public String getId() {
+        return id;
     }
 
-    public void setIdLinhaDoTempo(long idLinhaDoTempo) {
-        this.idLinhaDoTempo = idLinhaDoTempo;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getTipo() {
@@ -30,11 +30,12 @@ public class LinhaDoTempoDTO {
         this.data = data;
     }
 
-    public String getTitulo() {
-        return titulo;
+    public String getHora() {
+        return hora;
     }
 
-    public void setTitulo(String titulo) {
-        this.titulo = titulo;
+    public void setHora(String hora) {
+        this.hora = hora;
     }
 }
+
