@@ -31,23 +31,4 @@ public class CuidadorService {
             return cuidadorExistente;
         }
     }
-
-    @Transactional
-    public CuidadorDTO buscarCuidadoresPorPaciente(Long idPaciente) {
-        if (idPaciente == null || idPaciente <= 0) {
-            throw new IllegalArgumentException("ID do paciente inválido");
-        }
-        Paciente paciente = Paciente.findById(idPaciente);
-        if (paciente == null)
-            throw new IllegalArgumentException("Paciente não encontrado");
-
-        Cuidador cuidador = Cuidador.find("paciente.idPaciente = ?1", idPaciente).firstResult();
-        if (cuidador == null)
-            return null;
-        CuidadorDTO cuidadorDTO = new CuidadorDTO();
-        cuidadorDTO.setIdCuidador(cuidador.idCuidador);
-        cuidadorDTO.setNomeCuidador(cuidador.nomeCuidador);
-        cuidadorDTO.setTelefoneCuidador(cuidador.telefoneCuidador);
-        return cuidadorDTO;
-    }
 }

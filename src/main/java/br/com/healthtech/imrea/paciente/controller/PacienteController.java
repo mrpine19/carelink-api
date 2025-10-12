@@ -1,7 +1,6 @@
 package br.com.healthtech.imrea.paciente.controller;
 
 import br.com.healthtech.imrea.paciente.dto.PacienteDTO;
-import br.com.healthtech.imrea.paciente.service.CuidadorService;
 import br.com.healthtech.imrea.paciente.service.PacienteService;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -23,7 +22,7 @@ public class PacienteController {
     @Path("/{idPaciente}/historico")
     @Produces(MediaType.APPLICATION_JSON)
     public Response obterHistoricoPaciente(@PathParam("idPaciente") Long idPaciente) {
-        PacienteDTO pacienteDTO = pacienteService.buscarPacientePorId(idPaciente);
+        PacienteDTO pacienteDTO = pacienteService.buscarHistoricoPacientePorId(idPaciente);
         return Response.ok(pacienteDTO).build();
     }
 }

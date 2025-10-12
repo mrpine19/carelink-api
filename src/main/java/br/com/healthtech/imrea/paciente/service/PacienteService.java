@@ -1,6 +1,10 @@
 package br.com.healthtech.imrea.paciente.service;
 
+import br.com.healthtech.imrea.agendamento.service.ConsultaService;
+import br.com.healthtech.imrea.paciente.domain.Cuidador;
 import br.com.healthtech.imrea.paciente.domain.Paciente;
+import br.com.healthtech.imrea.paciente.dto.ConsultaDTO;
+import br.com.healthtech.imrea.paciente.dto.CuidadorDTO;
 import br.com.healthtech.imrea.paciente.dto.PacienteDTO;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
@@ -14,10 +18,10 @@ public class PacienteService {
 
     private static final Logger logger = LoggerFactory.getLogger(PacienteService.class);
 
-    private final CuidadorService cuidadorService;
+    private final ConsultaService consultaService;
 
-    public PacienteService(CuidadorService cuidadorService) {
-        this.cuidadorService = cuidadorService;
+    public PacienteService(ConsultaService consultaService) {
+        this.consultaService = consultaService;
     }
 
     @Transactional
@@ -38,7 +42,7 @@ public class PacienteService {
     }
 
     @Transactional
-    public PacienteDTO buscarPacientePorId(Long idPaciente) {
+    public PacienteDTO buscarHistoricoPacientePorId(Long idPaciente) {
         if (idPaciente == null || idPaciente <= 0) {
             throw new IllegalArgumentException("ID do paciente inválido");
         }
@@ -50,7 +54,17 @@ public class PacienteService {
         pacienteDTO.setIdPaciente(paciente.idPaciente);
         pacienteDTO.setNomePaciente(paciente.nomePaciente);
         pacienteDTO.setTelefonePaciente(paciente.telefonePaciente);
-        pacienteDTO.setCuidador(cuidadorService.buscarCuidadoresPorPaciente(idPaciente));
+
+        CuidadorDTO cuidadorDTO = new CuidadorDTO();
+        for (Cuidador cuidador : paciente.cuidadores) {
+            cuidadorDTO.setNomeCuidador(cuidador.nomeCuidador);
+            cuidadorDTO.setTelefoneCuidador(cuidador.telefoneCuidador);
+        }
+        pacienteDTO.setCuidador(cuidadorDTO);
+
+        ConsultaDTO consultaDTO = consultaService.buscaProximaConsultaPorPaciente(idPaciente);
+        pacienteDTO.setProximaConsulta(consultaDTO);
+
         return pacienteDTO;
     }
 }
