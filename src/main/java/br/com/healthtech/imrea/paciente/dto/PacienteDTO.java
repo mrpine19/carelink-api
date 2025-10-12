@@ -1,5 +1,7 @@
 package br.com.healthtech.imrea.paciente.dto;
 
+import br.com.healthtech.imrea.interacao.dto.LinhaDoTempoDTO;
+
 import java.util.List;
 
 public class PacienteDTO {
