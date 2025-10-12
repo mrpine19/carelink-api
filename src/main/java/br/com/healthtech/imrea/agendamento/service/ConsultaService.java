@@ -1,6 +1,7 @@
 package br.com.healthtech.imrea.agendamento.service;
 
 import br.com.healthtech.imrea.agendamento.domain.Consulta;
+import br.com.healthtech.imrea.interacao.dto.InteracaoConsultaDTO;
 import br.com.healthtech.imrea.paciente.dto.ConsultaDTO;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
@@ -8,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -81,4 +83,21 @@ public class ConsultaService {
         return consultaDTO;
     }
 
+    public List<InteracaoConsultaDTO> buscarHistoricoConulstasPorPaciente(Long idPaciente) {
+        List<Consulta> consultas = Consulta.find("paciente.idPaciente = ?1 order by dataAgenda desc", idPaciente).list();
+        List<InteracaoConsultaDTO> historico = new ArrayList<>();
+
+        for (Consulta consulta : consultas) {
+            InteracaoConsultaDTO consultaDTO = new InteracaoConsultaDTO();
+            consultaDTO.setTipo("CONSULTA");
+            consultaDTO.setData(consulta.dataAgenda.toInstant().atZone(ZoneId.systemDefault()).toLocalDate().toString());
+            consultaDTO.setHora(consulta.dataAgenda.toInstant().atZone(ZoneId.systemDefault()).toLocalTime().toString());
+            consultaDTO.setStatus(consulta.statusConsulta);
+            consultaDTO.setModalidade("Telemedicina");
+            consultaDTO.setProfissional(consulta.profissional.nomeProfissional);
+            consultaDTO.setEspecialidade(consulta.profissional.especialidadeProfissional);
+            historico.add(consultaDTO);
+        }
+        return historico;
+    }
 }

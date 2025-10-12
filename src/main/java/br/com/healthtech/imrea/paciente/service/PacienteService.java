@@ -1,28 +1,40 @@
 package br.com.healthtech.imrea.paciente.service;
 
 import br.com.healthtech.imrea.agendamento.service.ConsultaService;
+import br.com.healthtech.imrea.interacao.dto.InteracaoConsultaDTO;
+import br.com.healthtech.imrea.interacao.dto.InteracaoEquipeDTO;
+import br.com.healthtech.imrea.interacao.dto.InteracaoSistemaDTO;
+import br.com.healthtech.imrea.interacao.dto.LinhaDoTempoDTO;
+import br.com.healthtech.imrea.interacao.service.AnotacaoManualService;
+import br.com.healthtech.imrea.interacao.service.InteracaoAutomatizadaService;
 import br.com.healthtech.imrea.paciente.domain.Cuidador;
 import br.com.healthtech.imrea.paciente.domain.Paciente;
 import br.com.healthtech.imrea.paciente.dto.ConsultaDTO;
 import br.com.healthtech.imrea.paciente.dto.CuidadorDTO;
 import br.com.healthtech.imrea.paciente.dto.PacienteDTO;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @ApplicationScoped
 public class PacienteService {
 
     private static final Logger logger = LoggerFactory.getLogger(PacienteService.class);
 
-    private final ConsultaService consultaService;
+    @Inject
+    ConsultaService consultaService;
 
-    public PacienteService(ConsultaService consultaService) {
-        this.consultaService = consultaService;
-    }
+    @Inject
+    AnotacaoManualService anotacaoManualService;
+
+    @Inject
+    InteracaoAutomatizadaService interacaoAutomatizadaService;
 
     @Transactional
     public Paciente buscarOuCriarPaciente(Paciente paciente){
@@ -65,6 +77,17 @@ public class PacienteService {
         ConsultaDTO consultaDTO = consultaService.buscaProximaConsultaPorPaciente(idPaciente);
         pacienteDTO.setProximaConsulta(consultaDTO);
 
+        List<InteracaoConsultaDTO> historicoConsultas = consultaService.buscarHistoricoConulstasPorPaciente(idPaciente);
+        List<InteracaoEquipeDTO> historicoEquipe = anotacaoManualService.buscarHistoricoEquipePorPaciente(idPaciente);
+        List<InteracaoSistemaDTO> historicoSistema = interacaoAutomatizadaService.buscarHistoricoSistemaPorPaciente(idPaciente);
+
+        List<LinhaDoTempoDTO> linhaDoTempoDTO = new ArrayList<>();
+        linhaDoTempoDTO.addAll(historicoConsultas);
+        linhaDoTempoDTO.addAll(historicoEquipe);
+        linhaDoTempoDTO.addAll(historicoSistema);
+        linhaDoTempoDTO.sort((a, b) -> b.getData().compareTo(a.getData())); // Ordena por data decrescente
+
+        pacienteDTO.setLinhaDoTempo(linhaDoTempoDTO);
         return pacienteDTO;
     }
 }

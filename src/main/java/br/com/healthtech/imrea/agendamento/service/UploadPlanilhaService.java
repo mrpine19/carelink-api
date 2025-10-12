@@ -33,25 +33,25 @@ public class UploadPlanilhaService {
 
     private static final Logger logger = LoggerFactory.getLogger(UploadPlanilhaService.class);
 
-    private final PacienteService pacienteService;
-    private final ConsultaService consultaService;
-    private final ProfissionalService profissionalService;
-    private final UsuarioService usuarioService;
-    private final CuidadorService cuidadorService;
+    @Inject
+    PacienteService pacienteService;
+
+    @Inject
+    ConsultaService consultaService;
+
+    @Inject
+    ProfissionalService profissionalService;
+
+    @Inject
+    UsuarioService usuarioService;
+
+    @Inject
+    CuidadorService cuidadorService;
 
     List<Consulta> listaConsultas = new java.util.ArrayList<>();
 
     @Inject
     InteracaoAutomatizadaService interacaoAutomatizadaService;
-
-    public UploadPlanilhaService(PacienteService pacienteService, ConsultaService consultaService, ProfissionalService profissionalService, UsuarioService usuarioService, CuidadorService cuidadorService) {
-        this.pacienteService = pacienteService;
-        this.consultaService = consultaService;
-        this.profissionalService = profissionalService;
-        this.usuarioService = usuarioService;
-        this.cuidadorService = cuidadorService;
-    }
-
 
     @Transactional
     public List<RegistroAgendamento> processarPlanilha(FileUpload fileUpload) {

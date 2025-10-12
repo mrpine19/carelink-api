@@ -4,6 +4,7 @@ import br.com.healthtech.imrea.agendamento.domain.Consulta;
 import br.com.healthtech.imrea.agendamento.service.ConsultaService;
 import br.com.healthtech.imrea.alerta.service.ChatbotService;
 import br.com.healthtech.imrea.interacao.domain.TipoInteracao;
+import br.com.healthtech.imrea.interacao.dto.InteracaoSistemaDTO;
 import br.com.healthtech.imrea.paciente.domain.Cuidador;
 import br.com.healthtech.imrea.interacao.domain.InteracaoAutomatizada;
 import io.quarkus.scheduler.Scheduled;
@@ -14,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -68,7 +70,7 @@ public class InteracaoAutomatizadaService {
                 novaInteracao.tipoInteracao = tipo.tipo;
                 novaInteracao.receptorTipo = receptorTipo;
                 novaInteracao.statusInteracao = "Lembrete enviado";
-                novaInteracao.detalhesInteracao = "Enviado lembrete via chatbot";
+                novaInteracao.detalhesInteracao = "Lembrete de consulta (24h) enviado com sucesso via Chatbot para o Paciente.";
                 novaInteracao.dataHoraInteracao = LocalDateTime.now();
                 novaInteracao.persist();
                 logger.info("Interação automatizada persistida para consulta {}.", consulta.idConsulta);
@@ -95,4 +97,18 @@ public class InteracaoAutomatizadaService {
         return "55" + numero.replaceAll("[^0-9]", "");
     }
 
+    public List<InteracaoSistemaDTO> buscarHistoricoSistemaPorPaciente(Long idPaciente) {
+        List<InteracaoAutomatizada> interacoes = InteracaoAutomatizada.find("paciente.idPaciente = ?1 order by dataHoraInteracao desc", idPaciente).list();
+        List<InteracaoSistemaDTO> interacoesDTO = new ArrayList<>();
+
+        for (InteracaoAutomatizada interacao : interacoes) {
+            InteracaoSistemaDTO dto = new InteracaoSistemaDTO();
+            dto.setTipo("INTERACAO_SISTEMA");
+            dto.setData(interacao.dataHoraInteracao.toLocalDate().toString());
+            dto.setHora(String.format("%02d:%02d", interacao.dataHoraInteracao.getHour(), interacao.dataHoraInteracao.getMinute()));
+            dto.setLog(interacao.detalhesInteracao);
+            interacoesDTO.add(dto);
+        }
+        return interacoesDTO;
+    }
 }
