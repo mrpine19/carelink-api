@@ -26,6 +26,7 @@ public class ConsultaService {
                                                     consulta.paciente, consulta.profissional).firstResult();
 
         if(consultaExistente == null){
+            consulta.statusConsulta = "AGENDADO";
             consulta.dtCriacaoConsulta = LocalDateTime.now();
             consulta.persist();
             logger.info("Agendamento marcado para paciente {}, na data {}", consulta.paciente.nomePaciente,
@@ -43,6 +44,13 @@ public class ConsultaService {
         LocalDateTime fimDoDia = amanha.atTime(LocalTime.MAX);
 
         return Consulta.find("dataAgenda >= ?1 and dataAgenda <= ?2", inicioDoDia, fimDoDia).list();
+    }
+
+    public List<Consulta> buscarConsultasMarcadasProximaHora() {
+        LocalDate agora = LocalDate.now();
+        LocalDateTime proximaHora = LocalDateTime.now().plusHours(1);
+
+        return Consulta.find("dataAgenda >= ?1 and dataAgenda <= ?2", agora.atStartOfDay(), proximaHora).list();
     }
 
     public ConsultaDTO buscaProximaConsultaPorPaciente(Long idPaciente) {

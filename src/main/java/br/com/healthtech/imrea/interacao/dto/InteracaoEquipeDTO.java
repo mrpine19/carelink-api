@@ -1,4 +1,4 @@
-package br.com.healthtech.imrea.paciente.dto;
+package br.com.healthtech.imrea.interacao.dto;
 
 public class InteracaoEquipeDTO extends LinhaDoTempoDTO {
     private String anotacao;

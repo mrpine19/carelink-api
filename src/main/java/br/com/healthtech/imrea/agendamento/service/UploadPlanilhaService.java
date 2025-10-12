@@ -7,7 +7,6 @@ import br.com.healthtech.imrea.agendamento.domain.UploadLog;
 import br.com.healthtech.imrea.paciente.domain.Cuidador;
 import br.com.healthtech.imrea.paciente.domain.Paciente;
 import br.com.healthtech.imrea.paciente.service.CuidadorService;
-import br.com.healthtech.imrea.paciente.service.InteracaoAutomatizadaService;
 import br.com.healthtech.imrea.paciente.service.PacienteService;
 import br.com.healthtech.imrea.usuario.service.UsuarioService;
 import com.alibaba.excel.EasyExcel;
@@ -35,17 +34,16 @@ public class UploadPlanilhaService {
     private final ConsultaService consultaService;
     private final ProfissionalService profissionalService;
     private final UsuarioService usuarioService;
-    private final InteracaoAutomatizadaService interacaoService;
     private final CuidadorService cuidadorService;
 
-    public UploadPlanilhaService(PacienteService pacienteService, ConsultaService consultaService, ProfissionalService profissionalService, UsuarioService usuarioService, InteracaoAutomatizadaService interacaoService, CuidadorService cuidadorService) {
+    public UploadPlanilhaService(PacienteService pacienteService, ConsultaService consultaService, ProfissionalService profissionalService, UsuarioService usuarioService, CuidadorService cuidadorService) {
         this.pacienteService = pacienteService;
         this.consultaService = consultaService;
         this.profissionalService = profissionalService;
         this.usuarioService = usuarioService;
-        this.interacaoService = interacaoService;
         this.cuidadorService = cuidadorService;
     }
+
 
     @Transactional
     public List<RegistroAgendamento> processarPlanilha(FileUpload fileUpload) {
@@ -139,8 +137,6 @@ public class UploadPlanilhaService {
             );
 
             consultaService.buscarOuCriarConsulta(consulta);
-            interacaoService.buscarOuCriarInteracao(consulta);
-
         } catch (ParseException e) {
             throw new IllegalArgumentException("Erro ao converter a data de nascimento do paciente.", e);
         }

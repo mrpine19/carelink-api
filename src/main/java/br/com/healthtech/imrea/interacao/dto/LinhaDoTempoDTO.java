@@ -1,4 +1,4 @@
-package br.com.healthtech.imrea.paciente.dto;
+package br.com.healthtech.imrea.interacao.dto;
 
 public abstract class LinhaDoTempoDTO {
     private String id;
