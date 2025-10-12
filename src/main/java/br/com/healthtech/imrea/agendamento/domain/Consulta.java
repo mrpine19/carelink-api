@@ -44,6 +44,9 @@ public class Consulta extends PanacheEntityBase {
     @Column(name="status_consulta")
     public String statusConsulta;
 
+    @Column(name="data_registro_status")
+    public LocalDateTime dataRegistroStatus;
+
     @Column(name="dt_criacao")
     public LocalDateTime dtCriacaoConsulta;
 

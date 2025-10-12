@@ -4,6 +4,8 @@ import br.com.healthtech.imrea.agendamento.domain.Consulta;
 import br.com.healthtech.imrea.agendamento.domain.Profissional;
 import br.com.healthtech.imrea.agendamento.domain.RegistroAgendamento;
 import br.com.healthtech.imrea.agendamento.domain.UploadLog;
+import br.com.healthtech.imrea.interacao.domain.TipoInteracao;
+import br.com.healthtech.imrea.interacao.service.InteracaoAutomatizadaService;
 import br.com.healthtech.imrea.paciente.domain.Cuidador;
 import br.com.healthtech.imrea.paciente.domain.Paciente;
 import br.com.healthtech.imrea.paciente.service.CuidadorService;
@@ -11,6 +13,7 @@ import br.com.healthtech.imrea.paciente.service.PacienteService;
 import br.com.healthtech.imrea.usuario.service.UsuarioService;
 import com.alibaba.excel.EasyExcel;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 import org.slf4j.Logger;
@@ -35,6 +38,11 @@ public class UploadPlanilhaService {
     private final ProfissionalService profissionalService;
     private final UsuarioService usuarioService;
     private final CuidadorService cuidadorService;
+
+    List<Consulta> listaConsultas = new java.util.ArrayList<>();
+
+    @Inject
+    InteracaoAutomatizadaService interacaoAutomatizadaService;
 
     public UploadPlanilhaService(PacienteService pacienteService, ConsultaService consultaService, ProfissionalService profissionalService, UsuarioService usuarioService, CuidadorService cuidadorService) {
         this.pacienteService = pacienteService;
@@ -81,6 +89,8 @@ public class UploadPlanilhaService {
 
         StringBuilder detalhesErrosBuilder = new StringBuilder();
 
+        /* REMOVER ESSA LINHA AQUI DEPOIS */
+        listaConsultas = new java.util.ArrayList<>();
         for (RegistroAgendamento registro : listasAgendamentos) {
             try {
                 processarUmRegistroComTransacao(registro, uploadLog);
@@ -95,6 +105,9 @@ public class UploadPlanilhaService {
                         .append("; ");
             }
         }
+
+        /* REMOVER ESSA LINHA AQUI DEPOIS */
+        interacaoAutomatizadaService.enviarLembrete(listaConsultas, TipoInteracao.LEMBRETE_24H);
 
         if (uploadLog.numRegistrosComErro > 0) {
             uploadLog.statusUpload = "FINALIZADO COM ERROS";
@@ -137,6 +150,7 @@ public class UploadPlanilhaService {
             );
 
             consultaService.buscarOuCriarConsulta(consulta);
+           listaConsultas.add(consulta);
         } catch (ParseException e) {
             throw new IllegalArgumentException("Erro ao converter a data de nascimento do paciente.", e);
         }
