@@ -27,6 +27,7 @@ public class ConsultaService {
 
         if(consultaExistente == null){
             consulta.statusConsulta = "AGENDADO";
+            consulta.dataRegistroStatus = LocalDateTime.now();
             consulta.dtCriacaoConsulta = LocalDateTime.now();
             consulta.persist();
             logger.info("Agendamento marcado para paciente {}, na data {}", consulta.paciente.nomePaciente,

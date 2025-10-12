@@ -13,10 +13,9 @@ import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @ApplicationScoped
 public class InteracaoAutomatizadaService {
@@ -48,26 +47,29 @@ public class InteracaoAutomatizadaService {
         enviarLembrete(consultasDeAgora, TipoInteracao.LEMBRETE_1H);
     }
 
-    private void enviarLembrete(List<Consulta> consultas, TipoInteracao tipo) {
+    /* private */ public void enviarLembrete(List<Consulta> consultas, TipoInteracao tipo) {
         for (Consulta consulta : consultas) {
             try {
                 logger.debug("Enviando mensagem para paciente: {}, consulta: {}", consulta.paciente.nomePaciente, consulta.idConsulta);
                 String toPaciente = normalizarTelefone(consulta.paciente.telefonePaciente);
                 String bodyPaciente = templateService.construirMensagem(consulta, consulta.paciente.nomePaciente, tipo);
-                chatbotService.sendMessage(toPaciente, bodyPaciente);
+                //chatbotService.sendMessage(toPaciente, bodyPaciente);
 
+                Set<Cuidador> cuidadores = consulta.paciente.cuidadores;
                 String receptorTipo = "PACIENTE";
-                if (!consulta.paciente.cuidadores.isEmpty()) {
+                if (cuidadores == null || cuidadores.isEmpty() || cuidadores.stream().allMatch(c -> c == null)) {
+                    logger.warn("Paciente {} não possui cuidadores.", consulta.paciente.nomePaciente);
+                } else {
                     enviaMensagemCuidador(consulta, tipo);
                     receptorTipo = "AMBOS";
-                } else {
-                    logger.warn("Paciente {} não possui cuidadores.", consulta.paciente.nomePaciente);
                 }
 
                 InteracaoAutomatizada novaInteracao = new InteracaoAutomatizada(consulta, consulta.paciente);
                 novaInteracao.tipoInteracao = tipo.tipo;
                 novaInteracao.receptorTipo = receptorTipo;
                 novaInteracao.statusInteracao = "Lembrete enviado";
+                novaInteracao.detalhesInteracao = "Enviado lembrete via chatbot";
+                novaInteracao.dataHoraInteracao = LocalDateTime.now();
                 novaInteracao.persist();
                 logger.info("Interação automatizada persistida para consulta {}.", consulta.idConsulta);
             } catch (Exception e) {
@@ -82,7 +84,7 @@ public class InteracaoAutomatizadaService {
                 logger.debug("Enviando mensagem para cuidador: {}, consulta: {}", cuidador.nomeCuidador, consulta.idConsulta);
                 String to = normalizarTelefone(cuidador.telefoneCuidador);
                 String body = templateService.construirMensagem(consulta, cuidador.nomeCuidador, tipo);
-                chatbotService.sendMessage(to, body);
+                //chatbotService.sendMessage(to, body);
             } catch (Exception e) {
                 logger.error("Erro ao enviar mensagem para cuidador {}: {}", cuidador.nomeCuidador, e.getMessage());
             }

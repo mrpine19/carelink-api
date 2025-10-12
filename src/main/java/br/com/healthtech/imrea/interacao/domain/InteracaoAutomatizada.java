@@ -5,7 +5,7 @@ import br.com.healthtech.imrea.paciente.domain.Paciente;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name="TB_CAR_INTERACAO_AUTOMATIZADA")
@@ -38,7 +38,7 @@ public class InteracaoAutomatizada extends PanacheEntityBase {
     public String detalhesInteracao;
 
     @Column(name="data_hora_interacao")
-    public Date dataHoraInteracao;
+    public LocalDateTime dataHoraInteracao;
 
     public InteracaoAutomatizada(Consulta consulta, Paciente paciente) {
         this.consulta = consulta;

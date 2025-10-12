@@ -2,11 +2,13 @@ package br.com.healthtech.imrea.interacao.service;
 
 import br.com.healthtech.imrea.agendamento.domain.Consulta;
 import br.com.healthtech.imrea.interacao.domain.TipoInteracao;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
+@ApplicationScoped
 public class TemplateMensagemService {
 
     public String construirMensagem(Consulta consulta, String nomeDestinatario, TipoInteracao tipo) {
