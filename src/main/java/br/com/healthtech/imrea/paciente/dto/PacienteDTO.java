@@ -45,4 +45,44 @@ public class PacienteDTO {
     public void setCuidador(CuidadorDTO cuidador) {
         this.cuidador = cuidador;
     }
+
+    public String getScoreDeRisco() {
+        return scoreDeRisco;
+    }
+
+    public void setScoreDeRisco(String scoreDeRisco) {
+        this.scoreDeRisco = scoreDeRisco;
+    }
+
+    public String getNivelDeRisco() {
+        return nivelDeRisco;
+    }
+
+    public void setNivelDeRisco(String nivelDeRisco) {
+        this.nivelDeRisco = nivelDeRisco;
+    }
+
+    public List<String> getFatoresDeRisco() {
+        return fatoresDeRisco;
+    }
+
+    public void setFatoresDeRisco(List<String> fatoresDeRisco) {
+        this.fatoresDeRisco = fatoresDeRisco;
+    }
+
+    public ConsultaDTO getProximaConsulta() {
+        return proximaConsulta;
+    }
+
+    public void setProximaConsulta(ConsultaDTO proximaConsulta) {
+        this.proximaConsulta = proximaConsulta;
+    }
+
+    public List<LinhaDoTempoDTO> getLinhaDoTempo() {
+        return linhaDoTempo;
+    }
+
+    public void setLinhaDoTempo(List<LinhaDoTempoDTO> linhaDoTempo) {
+        this.linhaDoTempo = linhaDoTempo;
+    }
 }

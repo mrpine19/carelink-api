@@ -1,19 +1,10 @@
 package br.com.healthtech.imrea.paciente.dto;
 
 public class ConsultaDTO {
-    private Long idConsulta;
     private String dataConsulta;
     private String horaConsulta;
     private String nomeMedico;
     private String especialidadeConsulta;
-
-    public Long getIdConsulta() {
-        return idConsulta;
-    }
-
-    public void setIdConsulta(Long idConsulta) {
-        this.idConsulta = idConsulta;
-    }
 
     public String getDataConsulta() {
         return dataConsulta;
