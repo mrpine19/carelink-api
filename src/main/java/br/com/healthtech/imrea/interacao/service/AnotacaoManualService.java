@@ -2,9 +2,9 @@ package br.com.healthtech.imrea.interacao.service;
 
 import br.com.healthtech.imrea.interacao.domain.AnotacaoManual;
 import br.com.healthtech.imrea.interacao.dto.AnotacaoInputDTO;
+import br.com.healthtech.imrea.interacao.dto.AnotacaoUpdateDTO;
 import br.com.healthtech.imrea.interacao.dto.InteracaoEquipeDTO;
 import br.com.healthtech.imrea.paciente.domain.Paciente;
-import br.com.healthtech.imrea.paciente.service.PacienteService;
 import br.com.healthtech.imrea.usuario.domain.Usuario;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
@@ -27,6 +27,7 @@ public class AnotacaoManualService {
 
         for (AnotacaoManual anotacao : anotacoes) {
             InteracaoEquipeDTO interacao = new InteracaoEquipeDTO();
+            interacao.setId(anotacao.idAnotacao.toString());
             interacao.setTipo("ANOTACAO_EQUIPE");
             interacao.setData(anotacao.dataHoraAnotacao.toLocalDate().toString());
             interacao.setHora(String.format("%02d:%02d", anotacao.dataHoraAnotacao.getHour(), anotacao.dataHoraAnotacao.getMinute()));
@@ -71,5 +72,39 @@ public class AnotacaoManualService {
         AnotacaoManual anotacaoManual = new AnotacaoManual(paciente, usuario, anotacaoInputDTO.getConteudoAnotacao());
         anotacaoManual.persist();
         logger.info("Anotação manual salva com sucesso para o paciente {} pelo usuário {}", paciente.nomePaciente, usuario.nomeUsuario);
+    }
+
+    public void alterarAnotacao(AnotacaoUpdateDTO anotacaoUpdateDTO) {
+        if (anotacaoUpdateDTO.getIdAnotacao() == null || anotacaoUpdateDTO.getIdAnotacao() <= 0){
+            logger.warn("Id da anotação inválido: {}", anotacaoUpdateDTO.getIdAnotacao());
+            throw new BadRequestException("Id da anotação inválido");
+        }
+
+        AnotacaoManual anotacaoManual = AnotacaoManual.findById(anotacaoUpdateDTO.getIdAnotacao());
+        if (anotacaoManual == null){
+            logger.warn("Anotação não encontrada: {}", anotacaoUpdateDTO.getIdAnotacao());
+            throw new NotFoundException("Anotação não encontrada");
+        }
+
+        if (anotacaoUpdateDTO.getIdUsuario() == null || anotacaoUpdateDTO.getIdUsuario() <= 0){
+            logger.warn("Id do usuário inválido: {}", anotacaoUpdateDTO.getIdUsuario());
+            throw new BadRequestException ("Id do usuário inválido");
+        }
+
+        Usuario usuario = Usuario.findById(anotacaoUpdateDTO.getIdUsuario());
+
+        if (usuario == null){
+            logger.warn("Usuário não encontrado: {}", anotacaoUpdateDTO.getIdUsuario());
+            throw new NotFoundException("Usuário não encontrado");
+        }
+
+        if (anotacaoUpdateDTO.getNovoConteudo() == null || anotacaoUpdateDTO.getNovoConteudo().isEmpty()){
+            logger.warn("Conteúdo da anotação inválido");
+            throw new BadRequestException("Conteúdo da anotação inválido");
+        }
+
+        anotacaoManual.conteudoAnotacao = anotacaoUpdateDTO.getNovoConteudo();
+        anotacaoManual.persist();
+        logger.info("Anotação manual com id {} alterada com sucesso pelo usuário {}", anotacaoManual.idAnotacao, usuario.nomeUsuario);
     }
 }
