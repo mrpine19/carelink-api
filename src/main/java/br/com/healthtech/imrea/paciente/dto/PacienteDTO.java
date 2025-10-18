@@ -10,7 +10,7 @@ public class PacienteDTO {
     private String nomePaciente;
     private String telefonePaciente;
     private CuidadorDTO cuidador;
-    private String scoreDeRisco;
+    private float scoreDeRisco;
     private String nivelDeRisco;
     private List<String> fatoresDeRisco;
     private ConsultaDTO proximaConsulta;
@@ -48,11 +48,11 @@ public class PacienteDTO {
         this.cuidador = cuidador;
     }
 
-    public String getScoreDeRisco() {
+    public float getScoreDeRisco() {
         return scoreDeRisco;
     }
 
-    public void setScoreDeRisco(String scoreDeRisco) {
+    public void setScoreDeRisco(float scoreDeRisco) {
         this.scoreDeRisco = scoreDeRisco;
     }
 

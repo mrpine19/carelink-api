@@ -66,6 +66,14 @@ public class PacienteService {
         pacienteDTO.setIdPaciente(paciente.idPaciente);
         pacienteDTO.setNomePaciente(paciente.nomePaciente);
         pacienteDTO.setTelefonePaciente(paciente.telefonePaciente);
+        pacienteDTO.setScoreDeRisco(paciente.scoreDeRisco);
+
+        if (pacienteDTO.getScoreDeRisco() < 40)
+            pacienteDTO.setNivelDeRisco("BAIXO");
+        if (pacienteDTO.getScoreDeRisco() >= 40 && pacienteDTO.getScoreDeRisco() < 75)
+            pacienteDTO.setNivelDeRisco("MEDIO");
+        if (pacienteDTO.getScoreDeRisco() >= 75)
+            pacienteDTO.setNivelDeRisco("ALTO");
 
         CuidadorDTO cuidadorDTO = new CuidadorDTO();
         for (Cuidador cuidador : paciente.cuidadores) {
