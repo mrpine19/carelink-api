@@ -49,6 +49,11 @@ public class ConsultaService {
         return Consulta.find("dataAgenda >= ?1 and dataAgenda <= ?2", inicioDoDia, fimDoDia).list();
     }
 
+    public List<Consulta> buscarConsultasMarcadasHoje(){
+        LocalDate hoje = LocalDate.now();
+        return Consulta.find("dataAgenda >= ?1 and dataAgenda <= ?2", hoje.atStartOfDay(), hoje.atTime(LocalTime.MAX)).list();
+    }
+
     public List<Consulta> buscarConsultasMarcadasProximaHora() {
         LocalDate agora = LocalDate.now();
         LocalDateTime proximaHora = LocalDateTime.now().plusHours(1);
