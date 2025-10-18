@@ -33,6 +33,9 @@ public class Paciente extends PanacheEntityBase {
     @Column(name="data_nascimento_paciente")
     public Date dataNascimentoPaciente;
 
+    @Column(name="score_risco_absenteismo")
+    public float scoreDeRisco;
+
     @Column(name="dt_criacao")
     public LocalDateTime dtCriacaoPaciente;
 
