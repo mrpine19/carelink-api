@@ -9,6 +9,8 @@ public class PacienteDTO {
     private Long idPaciente;
     private String nomePaciente;
     private String telefonePaciente;
+    private String bairroPaciente;
+    private String dataNascimentoPaciente;
     private CuidadorDTO cuidador;
     private float scoreDeRisco;
     private String nivelDeRisco;
@@ -38,6 +40,22 @@ public class PacienteDTO {
 
     public void setTelefonePaciente(String telefonePaciente) {
         this.telefonePaciente = telefonePaciente;
+    }
+
+    public String getBairroPaciente() {
+        return bairroPaciente;
+    }
+
+    public void setBairroPaciente(String bairroPaciente) {
+        this.bairroPaciente = bairroPaciente;
+    }
+
+    public String getDataNascimentoPaciente() {
+        return dataNascimentoPaciente;
+    }
+
+    public void setDataNascimentoPaciente(String dataNascimentoPaciente) {
+        this.dataNascimentoPaciente = dataNascimentoPaciente;
     }
 
     public CuidadorDTO getCuidador() {

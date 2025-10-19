@@ -66,6 +66,8 @@ public class PacienteService {
         pacienteDTO.setIdPaciente(paciente.idPaciente);
         pacienteDTO.setNomePaciente(paciente.nomePaciente);
         pacienteDTO.setTelefonePaciente(paciente.telefonePaciente);
+        pacienteDTO.setBairroPaciente(paciente.bairroPaciente);
+        pacienteDTO.setDataNascimentoPaciente(paciente.dataNascimentoPaciente.toString());
         pacienteDTO.setScoreDeRisco(paciente.scoreDeRisco);
 
         if (pacienteDTO.getScoreDeRisco() < 40)

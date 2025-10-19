@@ -1,15 +1,12 @@
 package br.com.healthtech.imrea.paciente.service;
 
 import br.com.healthtech.imrea.paciente.domain.Cuidador;
-import br.com.healthtech.imrea.paciente.domain.Paciente;
-import br.com.healthtech.imrea.paciente.dto.CuidadorDTO;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 
 @ApplicationScoped
 public class CuidadorService {

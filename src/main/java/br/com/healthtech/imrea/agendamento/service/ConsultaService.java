@@ -18,7 +18,7 @@ public class ConsultaService {
     private static final Logger logger = LoggerFactory.getLogger(ConsultaService.class);
 
     @Transactional
-    public void buscarOuCriarConsulta(Consulta consulta){
+    public Consulta buscarOuCriarConsulta(Consulta consulta){
         if(consulta.dataAgenda == null || consulta.linkConsulta == null){
             throw new IllegalArgumentException("Infomações de agendamento inválidas");
         }
@@ -33,10 +33,12 @@ public class ConsultaService {
             consulta.persist();
             logger.info("Agendamento marcado para paciente {}, na data {}", consulta.paciente.nomePaciente,
                     consulta.dataAgenda);
+            return consulta;
         }
         else {
             logger.info("O paciente {} já possui um agendamento para a data {}", consulta.paciente.nomePaciente,
                     consulta.dataAgenda);
+            return consultaExistente;
         }
     }
 

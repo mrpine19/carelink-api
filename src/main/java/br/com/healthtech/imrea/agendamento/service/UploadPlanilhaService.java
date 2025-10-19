@@ -6,10 +6,7 @@ import br.com.healthtech.imrea.agendamento.domain.RegistroAgendamento;
 import br.com.healthtech.imrea.agendamento.domain.UploadLog;
 import br.com.healthtech.imrea.interacao.domain.TipoInteracao;
 import br.com.healthtech.imrea.interacao.service.InteracaoAutomatizadaService;
-import br.com.healthtech.imrea.paciente.domain.Cuidador;
 import br.com.healthtech.imrea.paciente.domain.Paciente;
-import br.com.healthtech.imrea.paciente.service.CuidadorService;
-import br.com.healthtech.imrea.paciente.service.PacienteService;
 import br.com.healthtech.imrea.usuario.service.UsuarioService;
 import com.alibaba.excel.EasyExcel;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -19,13 +16,9 @@ import org.jboss.resteasy.reactive.multipart.FileUpload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Field;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,21 +28,12 @@ public class UploadPlanilhaService {
     private static final Logger logger = LoggerFactory.getLogger(UploadPlanilhaService.class);
 
     @Inject
-    PacienteService pacienteService;
-
-    @Inject
-    ConsultaService consultaService;
-
-    @Inject
-    ProfissionalService profissionalService;
+    AgendamentoMapper agendamentoMapper;
 
     @Inject
     UsuarioService usuarioService;
 
-    @Inject
-    CuidadorService cuidadorService;
-
-    List<Consulta> listaConsultas = new java.util.ArrayList<>();
+    List<Consulta> listaConsultas = new ArrayList<>();
 
     @Inject
     InteracaoAutomatizadaService interacaoAutomatizadaService;
@@ -68,7 +52,7 @@ public class UploadPlanilhaService {
                         .doReadSync();
 
                 return listasAgendamentos.stream()
-                        .map(this::normalizarCamposNulos)
+                        .peek(RegistroAgendamento::normalizarCamposNulos)
                         .collect(Collectors.toList());
 
             } else {
@@ -83,36 +67,11 @@ public class UploadPlanilhaService {
         return Collections.emptyList();
     }
 
-    private RegistroAgendamento normalizarCamposNulos(RegistroAgendamento registro) {
-        // Itera sobre todos os campos (fields) declarados na classe RegistroAgendamento
-        for (Field field : RegistroAgendamento.class.getDeclaredFields()) {
-            // Verifica se o campo é do tipo String
-            if (field.getType().equals(String.class)) {
-                try {
-                    // Torna o campo acessível (necessário para campos privados)
-                    field.setAccessible(true);
-
-                    // Pega o valor atual do campo no objeto 'registro'
-                    String valorAtual = (String) field.get(registro);
-
-                    // Se o valor for nulo, atribui a string vazia ""
-                    if (valorAtual == null) {
-                        field.set(registro, "");
-                    }
-                } catch (IllegalAccessException e) {
-                    logger.error("Erro ao acessar campo por reflexão: " + field.getName(), e);
-                    // Pode-se optar por re-lançar a exceção ou apenas logar
-                }
-            }
-        }
-        return registro;
-    }
-
     @Transactional
     public void salvarDadosAgendamento(List<RegistroAgendamento> listasAgendamentos) {
 
         UploadLog uploadLog = new UploadLog();
-        uploadLog.dataHoraUpload = new Date();
+        uploadLog.dataHoraUpload = LocalDateTime.now();
         uploadLog.statusUpload = "EM_PROCESSAMENTO";
         uploadLog.usuario = usuarioService.buscarUsuarioTeste();
         uploadLog.persist();
@@ -120,7 +79,8 @@ public class UploadPlanilhaService {
         StringBuilder detalhesErrosBuilder = new StringBuilder();
 
         /* REMOVER ESSA LINHA AQUI DEPOIS */
-        listaConsultas = new java.util.ArrayList<>();
+        listaConsultas = new ArrayList<>();
+
         for (RegistroAgendamento registro : listasAgendamentos) {
             try {
                 processarUmRegistroComTransacao(registro, uploadLog);
@@ -151,39 +111,11 @@ public class UploadPlanilhaService {
 
     @Transactional
     public void processarUmRegistroComTransacao(RegistroAgendamento registro, UploadLog uploadLog) {
-        try {
+        Paciente paciente = agendamentoMapper.salvarInformacoesPaciente(registro);
+        Profissional profissional = agendamentoMapper.salvarInformacoesProfissional(registro);
+        Consulta consulta = agendamentoMapper.salvarInformacoesConsulta(registro, paciente, profissional, uploadLog);
 
-            Paciente paciente = new Paciente(
-                    registro.getNomePaciente(),
-                    registro.getNumeroPaciente(),
-                    new SimpleDateFormat("dd/MM/yyyy").parse(registro.getDataNascimentoPaciente())
-            );
-
-            Cuidador cuidador = new Cuidador(registro.getNomeAcompanhante(), registro.getNumeroAcompanhante());
-            paciente.cuidadores.add(cuidadorService.buscarOuCriarCuidador(cuidador));
-
-            paciente = pacienteService.buscarOuCriarPaciente(paciente);
-
-            Profissional profissional = new Profissional(registro.getNomeMedico(), registro.getEspecialidade());
-            profissional = profissionalService.buscarOuCriarMedico(profissional);
-
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-            LocalDateTime dataAgenda = LocalDateTime.parse(registro.getDataAgendamento() + " " + registro.getHoraAgendamento(), formatter);
-
-            Consulta consulta = new Consulta(
-                    paciente,
-                    profissional,
-                    uploadLog,
-                    dataAgenda,
-                    registro.getLinkConsulta(),
-                    registro.getCodigoConsulta(),
-                    registro.getObsAgendamento()
-            );
-
-            consultaService.buscarOuCriarConsulta(consulta);
-           listaConsultas.add(consulta);
-        } catch (ParseException e) {
-            throw new IllegalArgumentException("Erro ao converter a data de nascimento do paciente.", e);
-        }
+        /* REMOVER ESSA LINHA AQUI DEPOIS */
+        listaConsultas.add(consulta);
     }
 }

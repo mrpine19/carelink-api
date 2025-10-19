@@ -4,6 +4,7 @@ import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+
 @Entity
 @Table(name="TB_CAR_PROFISSIONAL_SAUDE")
 public class Profissional extends PanacheEntityBase {

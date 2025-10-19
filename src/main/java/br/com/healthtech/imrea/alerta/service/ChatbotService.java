@@ -22,7 +22,6 @@ public class ChatbotService {
     private final HttpClient client = HttpClient.newHttpClient();
 
     public void sendMessage(String to, String body) {
-        // Constrói o corpo da requisição JSON para enviar a mensagem
         JsonObject payload = Json.createObjectBuilder()
                 .add("to", to)
                 .add("body", body)
