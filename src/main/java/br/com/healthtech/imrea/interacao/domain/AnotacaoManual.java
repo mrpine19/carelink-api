@@ -1,6 +1,5 @@
 package br.com.healthtech.imrea.interacao.domain;
 
-
 import br.com.healthtech.imrea.paciente.domain.Paciente;
 import br.com.healthtech.imrea.usuario.domain.Usuario;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;

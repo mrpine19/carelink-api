@@ -4,7 +4,7 @@ import br.com.healthtech.imrea.usuario.domain.Usuario;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "TB_CAR_UPLOAD_LOG")
@@ -21,7 +21,7 @@ public class UploadLog extends PanacheEntityBase {
     public Usuario usuario;
 
     @Column(name="data_hora_upload")
-    public Date dataHoraUpload;
+    public LocalDateTime dataHoraUpload;
 
     @Column(name="nome_arquivo")
     public String nomeArquivo;

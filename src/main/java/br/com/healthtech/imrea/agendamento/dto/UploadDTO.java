@@ -5,7 +5,6 @@ public class UploadDTO {
     public int sucesso;
     public int erros;
 
-    // Construtor para facilitar a criação do objeto
     public UploadDTO(String status, int sucesso, int erros) {
         this.status = status;
         this.sucesso = sucesso;
