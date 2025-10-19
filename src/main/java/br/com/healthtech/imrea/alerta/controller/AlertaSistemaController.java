@@ -1,4 +1,4 @@
-package br.com.healthtech.imrea.alerta.contoller;
+package br.com.healthtech.imrea.alerta.controller;
 
 import br.com.healthtech.imrea.alerta.dto.AlertaDTO;
 import br.com.healthtech.imrea.alerta.service.AlertaSistemaService;
