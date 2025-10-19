@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 
 import java.time.*;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @ApplicationScoped
@@ -55,22 +54,19 @@ public class ConsultaService {
     }
 
     public List<Consulta> buscarConsultasMarcadasProximaHora() {
-        LocalDate agora = LocalDate.now();
+        LocalDateTime agora = LocalDateTime.now();
         LocalDateTime proximaHora = LocalDateTime.now().plusHours(1);
 
-        return Consulta.find("dataAgenda >= ?1 and dataAgenda <= ?2", agora.atStartOfDay(), proximaHora).list();
+        return Consulta.find("dataAgenda >= ?1 and dataAgenda <= ?2", agora, proximaHora).list();
     }
 
     public ConsultaDTO buscaProximaConsultaPorPaciente(Long idPaciente) {
-        Instant instantAgora = Instant.now();
 
-        // 2. Converte o Instant para java.util.Date, que é o tipo da sua entidade
-        Date dateAgora = Date.from(instantAgora);
+        LocalDateTime inicioDoDiaDeHoje = LocalDate.now().atStartOfDay();
 
-        // 3. Usa o Date na query
         Consulta consulta = Consulta.find(
                 "paciente.idPaciente = ?1 and dataAgenda >= ?2 order by dataAgenda asc",
-                idPaciente, dateAgora // Passamos o Date
+                idPaciente, inicioDoDiaDeHoje
         ).firstResult();
 
         if (consulta == null) {
@@ -78,11 +74,8 @@ public class ConsultaService {
         }
 
         ConsultaDTO consultaDTO = new ConsultaDTO();
-        LocalDateTime ldt = consulta.dataAgenda.toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDateTime();
-        consultaDTO.setDataConsulta(ldt.toLocalDate().toString());
-        consultaDTO.setHoraConsulta(ldt.toLocalTime().toString());
+        consultaDTO.setDataConsulta(consulta.dataAgenda.toLocalDate().toString());
+        consultaDTO.setHoraConsulta(consulta.dataAgenda.toLocalTime().toString());
         consultaDTO.setNomeMedico(consulta.profissional != null ? consulta.profissional.nomeProfissional : null);
         consultaDTO.setEspecialidadeConsulta(consulta.profissional != null ? consulta.profissional.especialidadeProfissional : null);
         return consultaDTO;
@@ -95,8 +88,8 @@ public class ConsultaService {
         for (Consulta consulta : consultas) {
             InteracaoConsultaDTO consultaDTO = new InteracaoConsultaDTO();
             consultaDTO.setTipo("CONSULTA");
-            consultaDTO.setData(consulta.dataAgenda.toInstant().atZone(ZoneId.systemDefault()).toLocalDate().toString());
-            consultaDTO.setHora(consulta.dataAgenda.toInstant().atZone(ZoneId.systemDefault()).toLocalTime().toString());
+            consultaDTO.setData(consulta.dataAgenda.toLocalDate().toString());
+            consultaDTO.setHora(consulta.dataAgenda.toLocalTime().toString());
             consultaDTO.setStatus(consulta.statusConsulta);
             consultaDTO.setModalidade("Telemedicina");
             consultaDTO.setProfissional(consulta.profissional.nomeProfissional);

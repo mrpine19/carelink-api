@@ -19,14 +19,15 @@ import org.jboss.resteasy.reactive.multipart.FileUpload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class UploadPlanilhaService {
@@ -65,7 +66,11 @@ public class UploadPlanilhaService {
                         .head(RegistroAgendamento.class)
                         .sheet()
                         .doReadSync();
-                return listasAgendamentos;
+
+                return listasAgendamentos.stream()
+                        .map(this::normalizarCamposNulos)
+                        .collect(Collectors.toList());
+
             } else {
                 logger.info("Formato de arquivo inválido");
             }
@@ -76,6 +81,31 @@ public class UploadPlanilhaService {
         }
 
         return Collections.emptyList();
+    }
+
+    private RegistroAgendamento normalizarCamposNulos(RegistroAgendamento registro) {
+        // Itera sobre todos os campos (fields) declarados na classe RegistroAgendamento
+        for (Field field : RegistroAgendamento.class.getDeclaredFields()) {
+            // Verifica se o campo é do tipo String
+            if (field.getType().equals(String.class)) {
+                try {
+                    // Torna o campo acessível (necessário para campos privados)
+                    field.setAccessible(true);
+
+                    // Pega o valor atual do campo no objeto 'registro'
+                    String valorAtual = (String) field.get(registro);
+
+                    // Se o valor for nulo, atribui a string vazia ""
+                    if (valorAtual == null) {
+                        field.set(registro, "");
+                    }
+                } catch (IllegalAccessException e) {
+                    logger.error("Erro ao acessar campo por reflexão: " + field.getName(), e);
+                    // Pode-se optar por re-lançar a exceção ou apenas logar
+                }
+            }
+        }
+        return registro;
     }
 
     @Transactional
@@ -122,12 +152,11 @@ public class UploadPlanilhaService {
     @Transactional
     public void processarUmRegistroComTransacao(RegistroAgendamento registro, UploadLog uploadLog) {
         try {
-            Date dataNascimentoPaciente = converterStringDeData(registro.getDataNascimentoPaciente());
 
             Paciente paciente = new Paciente(
                     registro.getNomePaciente(),
                     registro.getNumeroPaciente(),
-                    dataNascimentoPaciente
+                    new SimpleDateFormat("dd/MM/yyyy").parse(registro.getDataNascimentoPaciente())
             );
 
             Cuidador cuidador = new Cuidador(registro.getNomeAcompanhante(), registro.getNumeroAcompanhante());
@@ -138,7 +167,9 @@ public class UploadPlanilhaService {
             Profissional profissional = new Profissional(registro.getNomeMedico(), registro.getEspecialidade());
             profissional = profissionalService.buscarOuCriarMedico(profissional);
 
-            Date dataAgenda = converterDataHora(registro.getDataAgendamento(), registro.getHoraAgendamento());
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+            LocalDateTime dataAgenda = LocalDateTime.parse(registro.getDataAgendamento() + " " + registro.getHoraAgendamento(), formatter);
+
             Consulta consulta = new Consulta(
                     paciente,
                     profissional,
@@ -153,30 +184,6 @@ public class UploadPlanilhaService {
            listaConsultas.add(consulta);
         } catch (ParseException e) {
             throw new IllegalArgumentException("Erro ao converter a data de nascimento do paciente.", e);
-        }
-    }
-
-    private Date converterStringDeData(String dataString) throws ParseException {
-        SimpleDateFormat formatoEntrada = new SimpleDateFormat("yyyy/MM/dd");
-        Date data = formatoEntrada.parse(dataString);
-        return data;
-    }
-
-    private Date converterDataHora(String data, String hora) {
-        try {
-            // Converte a data do formato yyyy/MM/dd para dd/MM/yyyy antes de concatenar
-            SimpleDateFormat formatoEntrada = new SimpleDateFormat("yyyy/MM/dd");
-            SimpleDateFormat formatoSaida = new SimpleDateFormat("dd/MM/yyyy");
-            Date dataConvertida = formatoEntrada.parse(data);
-            String dataFormatada = formatoSaida.format(dataConvertida);
-
-            String dataHoraCompleta = dataFormatada + " " + hora;
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy H:mm");
-            LocalDateTime localDateTime = LocalDateTime.parse(dataHoraCompleta.trim(), formatter);
-
-            return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Erro ao converter data e hora. Formato esperado: dd/MM/yyyy H:mm", e);
         }
     }
 }
