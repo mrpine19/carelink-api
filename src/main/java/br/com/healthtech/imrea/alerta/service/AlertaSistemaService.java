@@ -35,10 +35,7 @@ public class AlertaSistemaService {
             alertaDTO.setIdConsulta(String.valueOf(consulta.idConsulta));
             alertaDTO.setNomeMedico(consulta.profissional.nomeProfissional);
             alertaDTO.setEspecialidadeConsulta(consulta.profissional.especialidadeProfissional);
-
-            SimpleDateFormat formatoHora = new SimpleDateFormat("HH:mm:ss");
-            String horaFormatada = formatoHora.format(consulta.dataAgenda);
-            alertaDTO.setHoraConsulta(horaFormatada);
+            alertaDTO.setHoraConsulta(consulta.dataAgenda.toLocalTime().toString());
 
             if (alertaDTO.getScoreDeRisco() < 40)
                 alertaDTO.setNivelDeRisco(AlertaDTO.NivelRisco.BAIXO);
