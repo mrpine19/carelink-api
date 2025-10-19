@@ -1,4 +1,4 @@
-package br.com.healthtech.imrea.alerta.contoller;
+package br.com.healthtech.imrea.alerta.controller;
 
 import br.com.healthtech.imrea.alerta.service.ChatbotService;
 import jakarta.inject.Inject;
