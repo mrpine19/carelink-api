@@ -4,10 +4,6 @@ import br.com.healthtech.imrea.agendamento.domain.Consulta;
 import br.com.healthtech.imrea.interacao.domain.TipoInteracao;
 import jakarta.enterprise.context.ApplicationScoped;
 
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
-
 @ApplicationScoped
 public class TemplateMensagemService {
 
@@ -21,8 +17,8 @@ public class TemplateMensagemService {
     }
 
     private String construirMensagem24HorasConsulta(Consulta consulta, String nomeDestinatario) {
-        String dataFormatada = formatarData(consulta.dataAgenda);
-        String horaFormatada = formatarHora(consulta.dataAgenda);
+        String dataFormatada = consulta.dataAgenda.toLocalDate().toString();
+        String horaFormatada = consulta.dataAgenda.toLocalTime().toString();
 
         return "Olá " + nomeDestinatario + "!\n\n" +
                 "Este é um lembrete da sua teleconsulta agendada de "+consulta.profissional.especialidadeProfissional+" com o(a) " + consulta.profissional.nomeProfissional + " do IMREA.\n\n" +
@@ -34,7 +30,7 @@ public class TemplateMensagemService {
     }
 
     private String construirMensagem1HoraConsulta(Consulta consulta, String nomeDestinatario) {
-        String horaFormatada = formatarHora(consulta.dataAgenda);
+        String horaFormatada = consulta.dataAgenda.toLocalTime().toString();
 
         return "🚨 *ATENÇÃO, " + nomeDestinatario + "!* 🚨\n\n" +
                 "Sua teleconsulta com o(a) " + consulta.profissional.nomeProfissional + " ("+consulta.profissional.especialidadeProfissional+") está marcada para *agora, às " + horaFormatada + "!*\n\n" +
@@ -45,15 +41,5 @@ public class TemplateMensagemService {
                 "1. Clique no link acima.\n" +
                 "2. Digite o Código de Acesso.\n\n" +
                 "*Precisa de ajuda imediata?* Responda AGORA a esta mensagem com a palavra 'AJUDA' para que nosso assistente possa te auxiliar.";
-    }
-
-    private String formatarData(Date data) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        return data.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().format(formatter);
-    }
-
-    private String formatarHora(Date data) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-        return data.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().format(formatter);
     }
 }

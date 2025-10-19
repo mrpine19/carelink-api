@@ -5,7 +5,6 @@ import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 @Table(name="TB_CAR_CONSULTA")
@@ -30,7 +29,7 @@ public class Consulta extends PanacheEntityBase {
     public UploadLog uploadLog;
 
     @Column(name="data_agenda")
-    public Date dataAgenda;
+    public LocalDateTime dataAgenda;
 
     @Column(name="link_acesso")
     public String linkConsulta;
@@ -53,7 +52,7 @@ public class Consulta extends PanacheEntityBase {
     public Consulta() {
     }
 
-    public Consulta(Paciente paciente, Profissional profissional, UploadLog uploadLog, Date dataAgenda, String linkConsulta, String codigoConsulta, String obsConsulta) {
+    public Consulta(Paciente paciente, Profissional profissional, UploadLog uploadLog, LocalDateTime dataAgenda, String linkConsulta, String codigoConsulta, String obsConsulta) {
         this.paciente = paciente;
         this.profissional = profissional;
         this.uploadLog = uploadLog;
