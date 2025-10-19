@@ -3,8 +3,8 @@ package br.com.healthtech.imrea.paciente.domain;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -31,10 +31,13 @@ public class Paciente extends PanacheEntityBase {
     public String telefonePaciente;
 
     @Column(name="data_nascimento_paciente")
-    public Date dataNascimentoPaciente;
+    public LocalDate dataNascimentoPaciente;
 
     @Column(name="score_risco_absenteismo")
     public float scoreDeRisco;
+
+    @Column(name="bairro_paciente")
+    public String bairroPaciente;
 
     @Column(name="dt_criacao")
     public LocalDateTime dtCriacaoPaciente;
@@ -42,7 +45,7 @@ public class Paciente extends PanacheEntityBase {
     public Paciente() {
     }
 
-    public Paciente(String nomePaciente, String telefonePaciente, Date dataNascimentoPaciente) {
+    public Paciente(String nomePaciente, String telefonePaciente, LocalDate dataNascimentoPaciente) {
         this.nomePaciente = nomePaciente;
         this.telefonePaciente = telefonePaciente;
         this.dataNascimentoPaciente = dataNascimentoPaciente;

@@ -52,10 +52,9 @@ public class Consulta extends PanacheEntityBase {
     public Consulta() {
     }
 
-    public Consulta(Paciente paciente, Profissional profissional, UploadLog uploadLog, LocalDateTime dataAgenda, String linkConsulta, String codigoConsulta, String obsConsulta) {
+    public Consulta(Paciente paciente, Profissional profissional, LocalDateTime dataAgenda, String linkConsulta, String codigoConsulta, String obsConsulta) {
         this.paciente = paciente;
         this.profissional = profissional;
-        this.uploadLog = uploadLog;
         this.dataAgenda = dataAgenda;
         this.linkConsulta = linkConsulta;
         this.codigoConsulta = codigoConsulta;

@@ -32,7 +32,7 @@ public class CepService {
 
             if(response.statusCode() == 200){
                 ObjectMapper mapper = new ObjectMapper();
-                Map<String, Object> jsonMap = mapper.readValue(response.body(), new TypeReference<Map<String, Object>>() {});
+                Map<String, Object> jsonMap = mapper.readValue(response.body(), new TypeReference<>() {});
                 String bairro = (String) jsonMap.get("bairro");
                 logger.info("Encontrado o barro {} para o cep {}", bairro, cep);
                 return bairro;
