@@ -13,6 +13,7 @@ import jakarta.inject.Inject;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.time.format.DateTimeFormatter;
 
 @ApplicationScoped
@@ -43,9 +44,12 @@ public class AgendamentoMapper {
                 LocalDate.parse(registro.getDataNascimentoPaciente(), DATE_FORMATTER)
         );
 
-        Cuidador cuidador = new Cuidador(registro.getNomeAcompanhante(), registro.getNumeroAcompanhante());
-        paciente.cuidadores.add(cuidadorService.buscarOuCriarCuidador(cuidador));
+        if(!registro.getNomeAcompanhante().isEmpty() && !registro.getNumeroAcompanhante().isEmpty()){
+            Cuidador cuidador = new Cuidador(registro.getNomeAcompanhante(), registro.getNumeroAcompanhante());
+            paciente.cuidadores.add(cuidadorService.buscarOuCriarCuidador(cuidador));
+        }
 
+        paciente.scoreDeRisco= calcularScoreInicial(paciente, registro.getEspecialidade());
         paciente.bairroPaciente = cepService.obterBairroPaciente(registro.getCep());
 
         return pacienteService.buscarOuCriarPaciente(paciente);
@@ -71,5 +75,37 @@ public class AgendamentoMapper {
         consulta.uploadLog = uploadLog;
 
         return consultaService.buscarOuCriarConsulta(consulta);
+    }
+
+    public int calcularScoreInicial(Paciente paciente, String especialidade) {
+        int score = 0;
+
+        Period period = Period.between(paciente.dataNascimentoPaciente, LocalDate.now());
+        int idadePaciente = period.getYears();
+
+        String especialidadeLower = especialidade.toLowerCase();
+            if (especialidadeLower.contains("terapia") || especialidadeLower.contains("fonoaudiologia")) {
+            score += 150; // Mantido
+        }
+
+        if (idadePaciente >= 85) {
+            score += 450;
+        } else if (idadePaciente >= 80) {
+            score += 400;
+        } else if (idadePaciente >= 70) {
+            score += 350;
+        } else if (idadePaciente >= 60) {
+            score += 300;
+        } else if (idadePaciente >= 50) {
+            score += 200;
+        } else {
+            score += 100;
+        }
+
+        if (paciente.cuidadores.isEmpty()) {
+            score += 100;
+        }
+
+        return score;
     }
 }
