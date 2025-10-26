@@ -15,19 +15,19 @@ public class ProfissionalService {
 
     @Transactional
     public Profissional buscarOuCriarMedico(Profissional profissional) {
-        if (profissional.nomeProfissional == null || profissional.nomeProfissional.isEmpty()) {
+        if (profissional.getNomeProfissional() == null || profissional.getNomeProfissional().isEmpty()) {
             throw new IllegalArgumentException("Nome do médico inválido!");
         }
 
-        Profissional profissionalExistente = Profissional.find("nomeProfissional = ?1", profissional.nomeProfissional).firstResult();
+        Profissional profissionalExistente = Profissional.find("nomeProfissional = ?1", profissional.getNomeProfissional()).firstResult();
 
         if (profissionalExistente == null) {
-            profissional.dtCriacaoProfissional = LocalDateTime.now();
+            profissional.setDtCriacaoProfissional(LocalDateTime.now());
             Profissional.persist(profissional);
-            logger.info("Medico {} cadastrado com sucesso!", profissional.nomeProfissional);
+            logger.info("Medico {} cadastrado com sucesso!", profissional.getNomeProfissional());
             return profissional;
         } else {
-            logger.info("Medico {} já cadastrado!", profissional.nomeProfissional);
+            logger.info("Medico {} já cadastrado!", profissional.getNomeProfissional());
             return profissionalExistente;
         }
     }

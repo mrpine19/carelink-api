@@ -13,16 +13,16 @@ public class Profissional extends PanacheEntityBase {
     @SequenceGenerator(name = "profissionalSequence", sequenceName = "TB_CAR_PROFISSIONAL_SAUDE_id_profissional_SEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "profissionalSequence")
     @Column(name="id_profissional")
-    public Long idProfissional;
+    private Long idProfissional;
 
     @Column(name="nome_profissional")
-    public String nomeProfissional;
+    private String nomeProfissional;
 
     @Column(name="especialidade_profissional")
-    public String especialidadeProfissional;
+    private String especialidadeProfissional;
 
     @Column(name="dt_criacao")
-    public LocalDateTime dtCriacaoProfissional;
+    private LocalDateTime dtCriacaoProfissional;
 
     public Profissional() {
     }
@@ -30,5 +30,37 @@ public class Profissional extends PanacheEntityBase {
     public Profissional(String nomeProfissional, String especialidadeProfissional) {
         this.nomeProfissional = nomeProfissional;
         this.especialidadeProfissional = especialidadeProfissional;
+    }
+
+    public Long getIdProfissional() {
+        return idProfissional;
+    }
+
+    public void setIdProfissional(Long idProfissional) {
+        this.idProfissional = idProfissional;
+    }
+
+    public String getNomeProfissional() {
+        return nomeProfissional;
+    }
+
+    public void setNomeProfissional(String nomeProfissional) {
+        this.nomeProfissional = nomeProfissional;
+    }
+
+    public String getEspecialidadeProfissional() {
+        return especialidadeProfissional;
+    }
+
+    public void setEspecialidadeProfissional(String especialidadeProfissional) {
+        this.especialidadeProfissional = especialidadeProfissional;
+    }
+
+    public LocalDateTime getDtCriacaoProfissional() {
+        return dtCriacaoProfissional;
+    }
+
+    public void setDtCriacaoProfissional(LocalDateTime dtCriacaoProfissional) {
+        this.dtCriacaoProfissional = dtCriacaoProfissional;
     }
 }

@@ -15,21 +15,21 @@ public class AnotacaoManual extends PanacheEntityBase {
     @SequenceGenerator(name = "anotacaoManualSequence", sequenceName = "TB_CAR_ANOTACAO_MANUAL_id_anotacao_SEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "anotacaoManualSequence")
     @Column(name="id_anotacao")
-    public Long idAnotacao;
+    private Long idAnotacao;
 
     @ManyToOne
     @JoinColumn(name = "id_paciente")
-    public Paciente paciente;
+    private Paciente paciente;
 
     @ManyToOne
     @JoinColumn(name = "id_usuario")
-    public Usuario usuario;
+    private Usuario usuario;
 
     @Column(name="conteudo_anotacao")
-    public String conteudoAnotacao;
+    private String conteudoAnotacao;
 
     @Column(name="data_hora_anotacao")
-    public LocalDateTime dataHoraAnotacao;
+    private LocalDateTime dataHoraAnotacao;
 
     public AnotacaoManual() {
     }
@@ -39,5 +39,45 @@ public class AnotacaoManual extends PanacheEntityBase {
         this.usuario = usuario;
         this.conteudoAnotacao = conteudoAnotacao;
         this.dataHoraAnotacao = LocalDateTime.now();
+    }
+
+    public Long getIdAnotacao() {
+        return idAnotacao;
+    }
+
+    public void setIdAnotacao(Long idAnotacao) {
+        this.idAnotacao = idAnotacao;
+    }
+
+    public Paciente getPaciente() {
+        return paciente;
+    }
+
+    public void setPaciente(Paciente paciente) {
+        this.paciente = paciente;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+
+    public String getConteudoAnotacao() {
+        return conteudoAnotacao;
+    }
+
+    public void setConteudoAnotacao(String conteudoAnotacao) {
+        this.conteudoAnotacao = conteudoAnotacao;
+    }
+
+    public LocalDateTime getDataHoraAnotacao() {
+        return dataHoraAnotacao;
+    }
+
+    public void setDataHoraAnotacao(LocalDateTime dataHoraAnotacao) {
+        this.dataHoraAnotacao = dataHoraAnotacao;
     }
 }

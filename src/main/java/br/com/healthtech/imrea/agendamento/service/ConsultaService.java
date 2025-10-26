@@ -19,25 +19,25 @@ public class ConsultaService {
 
     @Transactional
     public Consulta buscarOuCriarConsulta(Consulta consulta){
-        if(consulta.dataAgenda == null || consulta.linkConsulta == null){
+        if(consulta.getDataAgenda() == null || consulta.getLinkConsulta() == null){
             throw new IllegalArgumentException("Infomações de agendamento inválidas");
         }
 
-        Consulta consultaExistente = Consulta.find("dataAgenda = ?1 and paciente = ?2 and profissional = ?3", consulta.dataAgenda,
-                                                    consulta.paciente, consulta.profissional).firstResult();
+        Consulta consultaExistente = Consulta.find("dataAgenda = ?1 and paciente = ?2 and profissional = ?3", consulta.getDataAgenda(),
+                consulta.getPaciente(), consulta.getProfissional()).firstResult();
 
         if(consultaExistente == null){
-            consulta.statusConsulta = "AGENDADO";
-            consulta.dataRegistroStatus = LocalDateTime.now();
-            consulta.dtCriacaoConsulta = LocalDateTime.now();
+            consulta.setStatusConsulta("AGENDADO");
+            consulta.setDataRegistroStatus(LocalDateTime.now());
+            consulta.setDtCriacaoConsulta(LocalDateTime.now());
             consulta.persist();
-            logger.info("Agendamento marcado para paciente {}, na data {}", consulta.paciente.nomePaciente,
-                    consulta.dataAgenda);
+            logger.info("Agendamento marcado para paciente {}, na data {}", consulta.getPaciente().getNomePaciente(),
+                    consulta.getDataAgenda());
             return consulta;
         }
         else {
-            logger.info("O paciente {} já possui um agendamento para a data {}", consulta.paciente.nomePaciente,
-                    consulta.dataAgenda);
+            logger.info("O paciente {} já possui um agendamento para a data {}", consulta.getPaciente().getNomePaciente(),
+                    consulta.getDataAgenda());
             return consultaExistente;
         }
     }
@@ -76,10 +76,10 @@ public class ConsultaService {
         }
 
         ConsultaDTO consultaDTO = new ConsultaDTO();
-        consultaDTO.setDataConsulta(consulta.dataAgenda.toLocalDate().toString());
-        consultaDTO.setHoraConsulta(consulta.dataAgenda.toLocalTime().toString());
-        consultaDTO.setNomeMedico(consulta.profissional != null ? consulta.profissional.nomeProfissional : null);
-        consultaDTO.setEspecialidadeConsulta(consulta.profissional != null ? consulta.profissional.especialidadeProfissional : null);
+        consultaDTO.setDataConsulta(consulta.getDataAgenda().toLocalDate().toString());
+        consultaDTO.setHoraConsulta(consulta.getDataAgenda().toLocalTime().toString());
+        consultaDTO.setNomeMedico(consulta.getProfissional() != null ? consulta.getProfissional().getNomeProfissional() : null);
+        consultaDTO.setEspecialidadeConsulta(consulta.getProfissional() != null ? consulta.getProfissional().getEspecialidadeProfissional() : null);
         return consultaDTO;
     }
 
@@ -90,12 +90,12 @@ public class ConsultaService {
         for (Consulta consulta : consultas) {
             InteracaoConsultaDTO consultaDTO = new InteracaoConsultaDTO();
             consultaDTO.setTipo("CONSULTA");
-            consultaDTO.setData(consulta.dataAgenda.toLocalDate().toString());
-            consultaDTO.setHora(consulta.dataAgenda.toLocalTime().toString());
-            consultaDTO.setStatus(consulta.statusConsulta);
+            consultaDTO.setData(consulta.getDataAgenda().toLocalDate().toString());
+            consultaDTO.setHora(consulta.getDataAgenda().toLocalTime().toString());
+            consultaDTO.setStatus(consulta.getStatusConsulta());
             consultaDTO.setModalidade("Telemedicina");
-            consultaDTO.setProfissional(consulta.profissional.nomeProfissional);
-            consultaDTO.setEspecialidade(consulta.profissional.especialidadeProfissional);
+            consultaDTO.setProfissional(consulta.getProfissional().getNomeProfissional());
+            consultaDTO.setEspecialidade(consulta.getProfissional().getEspecialidadeProfissional());
             historico.add(consultaDTO);
         }
         return historico;

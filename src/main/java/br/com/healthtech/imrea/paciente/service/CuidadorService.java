@@ -14,17 +14,17 @@ public class CuidadorService {
 
     @Transactional
     public Cuidador buscarOuCriarCuidador(Cuidador cuidador){
-        if (cuidador.nomeCuidador == null || cuidador.nomeCuidador.isEmpty())
+        if (cuidador.getNomeCuidador() == null || cuidador.getNomeCuidador().isEmpty())
             return null;
 
-        Cuidador cuidadorExistente = Cuidador.find("nomeCuidador = ?1 and telefoneCuidador = ?2", cuidador.nomeCuidador, cuidador.telefoneCuidador).firstResult();
+        Cuidador cuidadorExistente = Cuidador.find("nomeCuidador = ?1 and telefoneCuidador = ?2", cuidador.getNomeCuidador(), cuidador.getTelefoneCuidador()).firstResult();
         if (cuidadorExistente == null){
-            cuidador.dtCriacaoCuidador = LocalDateTime.now();
+            cuidador.setDtCriacaoCuidador(LocalDateTime.now());
             cuidador.persist();
-            logger.info("Cuidador {} salvo com sucesso!", cuidador.nomeCuidador);
+            logger.info("Cuidador {} salvo com sucesso!", cuidador.getNomeCuidador());
             return cuidador;
         }else{
-            logger.info("Cuidador {} já existe!", cuidador.nomeCuidador);
+            logger.info("Cuidador {} já existe!", cuidador.getNomeCuidador());
             return cuidadorExistente;
         }
     }

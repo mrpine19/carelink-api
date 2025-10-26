@@ -27,14 +27,15 @@ public class AlertaSistemaService {
 
         for (Consulta consulta : consultasDeHoje){
             AlertaDTO alertaDTO = new AlertaDTO();
-            alertaDTO.setIdPaciente(String.valueOf(consulta.paciente.idPaciente));
-            alertaDTO.setNomePaciente(consulta.paciente.nomePaciente);
-            alertaDTO.setTelefonePaciente(consulta.paciente.telefonePaciente);
-            alertaDTO.setScoreDeRisco(consulta.paciente.scoreDeRisco);
-            alertaDTO.setIdConsulta(String.valueOf(consulta.idConsulta));
-            alertaDTO.setNomeMedico(consulta.profissional.nomeProfissional);
-            alertaDTO.setEspecialidadeConsulta(consulta.profissional.especialidadeProfissional);
-            alertaDTO.setHoraConsulta(consulta.dataAgenda.toLocalTime().toString());
+            alertaDTO.setIdPaciente(String.valueOf(consulta.getPaciente().getIdPaciente()));
+
+            alertaDTO.setNomePaciente(consulta.getPaciente().getNomePaciente());
+            alertaDTO.setTelefonePaciente(consulta.getPaciente().getTelefonePaciente());
+            alertaDTO.setScoreDeRisco(consulta.getPaciente().getScoreDeRisco());
+            alertaDTO.setIdConsulta(String.valueOf(consulta.getIdConsulta()));
+            alertaDTO.setNomeMedico(consulta.getProfissional().getNomeProfissional());
+            alertaDTO.setEspecialidadeConsulta(consulta.getProfissional().getEspecialidadeProfissional());
+            alertaDTO.setHoraConsulta(consulta.getDataAgenda().toLocalTime().toString());
 
             if (alertaDTO.getScoreDeRisco() < 40)
                 alertaDTO.setNivelDeRisco(AlertaDTO.NivelRisco.BAIXO);
@@ -55,8 +56,8 @@ public class AlertaSistemaService {
                 Long.valueOf(alertaDTO.getIdPaciente()), Long.valueOf(alertaDTO.getIdConsulta())).firstResult();
 
         if (alertaSistema != null) {
-            alertaDTO.setStatusAlerta(AlertaDTO.StatusAlerta.valueOf(alertaSistema.statusAlerta));
-            alertaDTO.setPrioridadeAlerta(AlertaDTO.PrioridadeAlerta.valueOf(alertaSistema.prioridadeAlerta));
+            alertaDTO.setStatusAlerta(AlertaDTO.StatusAlerta.valueOf(alertaSistema.getStatusAlerta()));
+            alertaDTO.setPrioridadeAlerta(AlertaDTO.PrioridadeAlerta.valueOf(alertaSistema.getPrioridadeAlerta()));
         } else {
             alertaDTO.setStatusAlerta(AlertaDTO.StatusAlerta.NOVO);
             alertaDTO.setPrioridadeAlerta(AlertaDTO.PrioridadeAlerta.BAIXA);
