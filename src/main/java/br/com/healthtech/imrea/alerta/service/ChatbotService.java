@@ -5,6 +5,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -13,6 +15,8 @@ import java.net.http.HttpResponse;
 
 @ApplicationScoped
 public class ChatbotService {
+
+    private static final Logger logger = LoggerFactory.getLogger(ChatbotService.class);
 
     @ConfigProperty(name = "whapi.api.token")
     String apiToken;
@@ -29,27 +33,7 @@ public class ChatbotService {
                 .build();
 
         String url = String.format("https://gate.whapi.cloud/messages/text?instance_id=%s", instanceId);
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(url))
-                .header("Content-Type", "application/json")
-                .header("Authorization", "Bearer " + apiToken) // Seu token é adicionado aqui
-                .POST(HttpRequest.BodyPublishers.ofString(payload.toString()))
-                .build();
-
-        try {
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-            if (response.statusCode() == 200) {
-                System.out.println("Mensagem enviada com sucesso! Resposta da Whapi: " + response.body());
-            } else {
-                System.err.println("Erro ao enviar mensagem. Status: " + response.statusCode());
-                System.err.println("Resposta da Whapi: " + response.body());
-            }
-        } catch (Exception e) {
-            System.err.println("Ocorreu um erro ao enviar a mensagem: " + e.getMessage());
-            e.printStackTrace();
-        }
+        fazerRequisicaoHTTP(url, payload);
     }
 
     public void enviarMensagem(JsonObject payload, TipoInteracao tipo) {
@@ -80,15 +64,13 @@ public class ChatbotService {
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-            if (response.statusCode() == 200) {
-                System.out.println("Mensagem enviada com sucesso! Resposta da Whapi: " + response.body());
+            if (response.statusCode() >= 200 && response.statusCode() < 300) {
+                logger.info("Mensagem enviada com sucesso! Destinatário: {}, Status: {}, Resposta: {}", payload.getString("to", "N/A"), response.statusCode(), response.body());
             } else {
-                System.err.println("Erro ao enviar mensagem. Status: " + response.statusCode());
-                System.err.println("Resposta da Whapi: " + response.body());
+                logger.error("Erro ao enviar mensagem. Status: {}, Resposta: {}", response.statusCode(), response.body());
             }
         } catch (Exception e) {
-            System.err.println("Ocorreu um erro ao enviar a mensagem: " + e.getMessage());
-            e.printStackTrace();
+            logger.error("Falha na requisição HTTP para o chatbot: {}", e.getMessage(), e);
         }
     }
 }

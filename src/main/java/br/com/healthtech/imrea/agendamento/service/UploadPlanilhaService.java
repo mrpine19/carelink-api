@@ -1,10 +1,8 @@
 package br.com.healthtech.imrea.agendamento.service;
 
-import br.com.healthtech.imrea.agendamento.domain.Consulta;
 import br.com.healthtech.imrea.agendamento.domain.Profissional;
 import br.com.healthtech.imrea.agendamento.domain.RegistroAgendamento;
 import br.com.healthtech.imrea.agendamento.domain.UploadLog;
-import br.com.healthtech.imrea.interacao.domain.TipoInteracao;
 import br.com.healthtech.imrea.interacao.service.InteracaoAutomatizadaService;
 import br.com.healthtech.imrea.paciente.domain.Paciente;
 import br.com.healthtech.imrea.usuario.service.UsuarioService;
@@ -17,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,8 +29,6 @@ public class UploadPlanilhaService {
 
     @Inject
     UsuarioService usuarioService;
-
-    List<Consulta> listaConsultas = new ArrayList<>();
 
     @Inject
     InteracaoAutomatizadaService interacaoAutomatizadaService;
@@ -78,9 +73,6 @@ public class UploadPlanilhaService {
 
         StringBuilder detalhesErrosBuilder = new StringBuilder();
 
-        /* REMOVER ESSA LINHA AQUI DEPOIS */
-        listaConsultas = new ArrayList<>();
-
         int processados = 0;
         int comErro = 0;
 
@@ -99,12 +91,8 @@ public class UploadPlanilhaService {
             }
         }
 
-        // Atribui os contadores após o loop
         uploadLog.setNumRegistrosProcessados(processados);
         uploadLog.setNumRegistrosComErro(comErro);
-
-        /* REMOVER ESSA LINHA AQUI DEPOIS */
-        interacaoAutomatizadaService.enviarLembrete(listaConsultas, TipoInteracao.LEMBRETE_1H);
 
         if (uploadLog.getNumRegistrosComErro() > 0) {
             uploadLog.setStatusUpload("FINALIZADO COM ERROS");
@@ -120,9 +108,6 @@ public class UploadPlanilhaService {
     public void processarUmRegistroComTransacao(RegistroAgendamento registro, UploadLog uploadLog) {
         Paciente paciente = agendamentoMapper.salvarInformacoesPaciente(registro);
         Profissional profissional = agendamentoMapper.salvarInformacoesProfissional(registro);
-        Consulta consulta = agendamentoMapper.salvarInformacoesConsulta(registro, paciente, profissional, uploadLog);
-
-        /* REMOVER ESSA LINHA AQUI DEPOIS */
-        listaConsultas.add(consulta);
+        agendamentoMapper.salvarInformacoesConsulta(registro, paciente, profissional, uploadLog);
     }
 }

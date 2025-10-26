@@ -5,7 +5,7 @@ import br.com.healthtech.imrea.agendamento.service.ConsultaService;
 import br.com.healthtech.imrea.alerta.service.ChatbotService;
 import br.com.healthtech.imrea.interacao.domain.TipoInteracao;
 import br.com.healthtech.imrea.interacao.dto.InteracaoSistemaDTO;
-import br.com.healthtech.imrea.interacao.dto.LembreteConsultaDTO;
+import br.com.healthtech.imrea.paciente.domain.Paciente;
 import br.com.healthtech.imrea.paciente.domain.Cuidador;
 import br.com.healthtech.imrea.interacao.domain.InteracaoAutomatizada;
 import io.quarkus.scheduler.Scheduled;
@@ -56,43 +56,62 @@ public class InteracaoAutomatizadaService {
         }
     }
 
-    /* private */ public void enviarLembrete(List<Consulta> consultas, TipoInteracao tipo) {
+    private void enviarLembrete(List<Consulta> consultas, TipoInteracao tipo) {
         for (Consulta consulta : consultas) {
             try {
-                logger.info("Enviando mensagem para paciente: {}, consulta: {}", consulta.getPaciente().getNomePaciente(), consulta.getIdConsulta());
-                JsonObject payload = templateService.construirMensagem(consulta, consulta.getPaciente().getNomePaciente(), tipo);
-                payload = Json.createObjectBuilder(payload)
-                        .add("to", normalizarTelefone(consulta.getPaciente().getTelefonePaciente())).build();
-                chatbotService.enviarMensagem(payload, tipo);
+                Paciente paciente = consulta.getPaciente();
+                logger.debug("Iniciando processo de lembrete para a consulta {}", consulta.getIdConsulta());
 
-                Set<Cuidador> cuidadores = consulta.getPaciente().getCuidadores();
+                // 1. Envia para o paciente
+                enviarMensagemParaDestinatario(consulta, tipo, paciente.getNomePaciente(), paciente.getTelefonePaciente());
+
+                // 2. Envia para os cuidadores, se existirem
+                Set<Cuidador> cuidadores = paciente.getCuidadores();
                 String receptorTipo = "PACIENTE";
                 if (cuidadores == null || cuidadores.isEmpty() || cuidadores.stream().allMatch(c -> c == null)) {
-                    logger.warn("Paciente {} não possui cuidadores.", consulta.getPaciente().getNomePaciente());
+                    logger.warn("Paciente {} não possui cuidadores para a consulta {}", paciente.getNomePaciente(), consulta.getIdConsulta());
                 } else {
-                    enviaMensagemCuidador(consulta, tipo);
+                    enviarMensagensParaCuidadores(consulta, tipo);
                     receptorTipo = "AMBOS";
                 }
 
+                // 3. Registra que a interação ocorreu
                 registrarInteracao(consulta, tipo, receptorTipo);
             } catch (Exception e) {
-                logger.error("Erro ao enviar mensagem para paciente {}: {}", consulta.getPaciente().getNomePaciente(), e.getMessage());
+                logger.error("Falha crítica no processo de envio de lembrete para a consulta {}: {}", consulta.getIdConsulta(), e.getMessage(), e);
             }
         }
     }
 
-    public void enviaMensagemCuidador(Consulta consulta, TipoInteracao tipo) {
+    private void enviarMensagensParaCuidadores(Consulta consulta, TipoInteracao tipo) {
         for (Cuidador cuidador : consulta.getPaciente().getCuidadores()) {
             try {
                 logger.info("Enviando mensagem para cuidador: {}, consulta: {}", cuidador.getNomeCuidador(), consulta.getIdConsulta());
-                JsonObject payload = templateService.construirMensagem(consulta, cuidador.getNomeCuidador(), tipo);
-                payload = Json.createObjectBuilder(payload)
-                        .add("to", normalizarTelefone(cuidador.getTelefoneCuidador())).build();
-                chatbotService.enviarMensagem(payload, tipo);
+                enviarMensagemParaDestinatario(consulta, tipo, cuidador.getNomeCuidador(), cuidador.getTelefoneCuidador());
             } catch (Exception e) {
                 logger.error("Erro ao enviar mensagem para cuidador {}: {}", cuidador.getNomeCuidador(), e.getMessage());
             }
         }
+    }
+
+    private void enviarMensagemParaDestinatario(Consulta consulta, TipoInteracao tipo, String nomeDestinatario, String telefone) {
+        String telefoneNormalizado = normalizarTelefone(telefone);
+        if (telefoneNormalizado.isEmpty()) {
+            logger.warn("Telefone do destinatário '{}' está vazio ou é inválido. Mensagem não enviada.", nomeDestinatario);
+            return;
+        }
+
+        JsonObject payloadBuilder = templateService.construirMensagem(consulta, nomeDestinatario, tipo);
+        if (payloadBuilder == null) {
+            logger.error("Não foi possível construir o template do tipo {} para {}", tipo, nomeDestinatario);
+            return;
+        }
+
+        payloadBuilder = Json.createObjectBuilder(payloadBuilder)
+                .add("to", telefoneNormalizado)
+                .build();
+
+        chatbotService.enviarMensagem(payloadBuilder, tipo);
     }
 
     public List<InteracaoSistemaDTO> buscarHistoricoSistemaPorPaciente(Long idPaciente) {
@@ -115,13 +134,33 @@ public class InteracaoAutomatizadaService {
         novaInteracao.setTipoInteracao(tipo.getTipo());
         novaInteracao.setReceptorTipo(receptorTipo);
         novaInteracao.setStatusInteracao("Lembrete enviado");
-        novaInteracao.setDetalhesInteracao("Lembrete de consulta (24h) enviado com sucesso via Chatbot para o Paciente.");
+        novaInteracao.setDetalhesInteracao(gerarDetalhesInteracao(tipo, receptorTipo));
         novaInteracao.setDataHoraInteracao(LocalDateTime.now());
         novaInteracao.persist();
         logger.info("Interação automatizada persistida para consulta {}.", consulta.getIdConsulta());
     }
 
-    private String normalizarTelefone(String numero) {
-        return "55" + numero.replaceAll("[^0-9]", "");
+    private String gerarDetalhesInteracao(TipoInteracao tipo, String receptorTipo) {
+        String tipoLembrete = tipo == TipoInteracao.LEMBRETE_24H ? "24h" : "1h";
+        String paraQuem;
+        if ("AMBOS".equals(receptorTipo)) {
+            paraQuem = "o Paciente e Cuidador(es)";
+        } else {
+            paraQuem = "o Paciente";
+        }
+        return String.format("Lembrete de consulta (%s) enviado com sucesso via Chatbot para %s.", tipoLembrete, paraQuem);
+    }
+
+    private String normalizarTelefone(String telefone) {
+        if (telefone == null || telefone.isBlank()) {
+            return "";
+        }
+        String apenasDigitos = telefone.replaceAll("\\D", "");
+
+        if (apenasDigitos.length() >= 10 && !apenasDigitos.startsWith("55")) {
+            return "55" + apenasDigitos;
+        }
+
+        return apenasDigitos;
     }
 }

@@ -2,11 +2,13 @@ package br.com.healthtech.imrea.interacao.service;
 
 import br.com.healthtech.imrea.agendamento.domain.Consulta;
 import br.com.healthtech.imrea.interacao.domain.TipoInteracao;
-import br.com.healthtech.imrea.interacao.dto.LembreteConsultaDTO;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
+
+import java.time.format.DateTimeFormatter;
+
 
 @ApplicationScoped
 public class TemplateMensagemService {
@@ -21,15 +23,16 @@ public class TemplateMensagemService {
     }
 
     private JsonObject construirMensagem24HorasConsulta(Consulta consulta, String nomeDestinatario) {
-        LembreteConsultaDTO lembreteConsultaDTO = criarEPouplarDTO(consulta);
+        String dataFormatada = consulta.getDataAgenda().toLocalDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        String horaFormatada = consulta.getDataAgenda().toLocalTime().toString();
 
         JsonObject body = Json.createObjectBuilder()
                 .add("text", String.format("Olá, %s! Sou o CareLink e estou aqui para garantir que você não perca sua teleconsulta.\n\n" +
                                 "A consulta de %s com o(a) Dr(a). %s está agendada para:\n\n" +
                                 "📅 Data: *%s*\n⏰ Horário: *%s*\n\n" +
                                 "Por favor, confirme abaixo sua presença. Sua resposta nos ajuda a organizar a agenda do hospital!",
-                        nomeDestinatario, lembreteConsultaDTO.getEspecialidadeConsulta(), lembreteConsultaDTO.getNomeProfissional(),
-                        lembreteConsultaDTO.getDataConsulta(), lembreteConsultaDTO.getHoraConsulta()))
+                        nomeDestinatario, consulta.getProfissional().getEspecialidadeProfissional(), consulta.getProfissional().getNomeProfissional(),
+                        dataFormatada, horaFormatada))
                 .build();
 
         JsonObject footer = Json.createObjectBuilder()
@@ -81,16 +84,5 @@ public class TemplateMensagemService {
                 .add("body", body)
                 .build();
 
-    }
-
-    private LembreteConsultaDTO criarEPouplarDTO(Consulta consulta){
-        LembreteConsultaDTO dadosParaEnvio = new LembreteConsultaDTO();
-        dadosParaEnvio.setNomePaciente(consulta.getPaciente().getNomePaciente());
-        dadosParaEnvio.setEspecialidadeConsulta(consulta.getProfissional().getEspecialidadeProfissional());
-        dadosParaEnvio.setNomeProfissional(consulta.getProfissional().getNomeProfissional());
-        dadosParaEnvio.setDataConsulta(consulta.getDataAgenda().toString());
-        dadosParaEnvio.setHoraConsulta(String.format("%02d:%02d", consulta.getDataAgenda().getHour(), consulta.getDataAgenda().getMinute()));
-        dadosParaEnvio.setIdConsulta(consulta.getIdConsulta().toString());
-        return dadosParaEnvio;
     }
 }
