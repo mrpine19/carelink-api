@@ -36,7 +36,7 @@ public class WebhookResource {
             String to = jsonPayload.getString("to");
             String body = jsonPayload.getString("body");
 
-            chatbotService.sendMessage(to, body);
+            chatbotService.enviarMensagem(to, body);
             return Response.ok("Mensagem enviada com sucesso!").build();
 
         } catch (Exception e) {
@@ -63,11 +63,11 @@ public class WebhookResource {
 
                         // 2. ENVIA A RESPOSTA DA IA DE VOLTA PARA O USUÁRIO
                         if (answerFromAI != null && !answerFromAI.isEmpty()) {
-                            chatbotService.sendMessage(fromUserId, answerFromAI);
+                            chatbotService.enviarMensagem(fromUserId, answerFromAI);
                         } else {
                             // Envia uma mensagem de erro padrão caso a API falhe
                             String errorMessage = "Desculpe, não consegui processar sua pergunta no momento. Tente novamente mais tarde.";
-                            chatbotService.sendMessage(fromUserId, errorMessage);
+                            chatbotService.enviarMensagem(fromUserId, errorMessage);
                         }
                     }
                 }

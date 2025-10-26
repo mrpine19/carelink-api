@@ -11,6 +11,8 @@ import br.com.healthtech.imrea.interacao.domain.InteracaoAutomatizada;
 import io.quarkus.scheduler.Scheduled;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,26 +39,31 @@ public class InteracaoAutomatizadaService {
     @Transactional
     @Scheduled(cron = "0 0 9 * * ?") // Executa todo dia às 9h
     public void enviarLembrete24HorasConsulta() {
-        logger.info("Iniciando envio de lembrete 24h para consultas de amanhã.");
         List<Consulta> consultasDeAmanha = consultaService.buscarConsultasMarcadasDiaSeguinte();
-        enviarLembrete(consultasDeAmanha, TipoInteracao.LEMBRETE_24H);
+        if (!consultasDeAmanha.isEmpty()){
+            logger.info("Iniciando envio de lembrete 24h para consultas de amanhã.");
+            enviarLembrete(consultasDeAmanha, TipoInteracao.LEMBRETE_24H);
+        }
     }
 
     @Transactional
     @Scheduled(cron = "0 0 6-18 * * ?") // Executa a cada hora entre 6h e 18h
     public void enviarLembrete1HoraConsulta() {
-        logger.info("Iniciando envio de lembrete 1h para consultas da próxima hora.");
         List<Consulta> consultasDeAgora = consultaService.buscarConsultasMarcadasProximaHora();
-        enviarLembrete(consultasDeAgora, TipoInteracao.LEMBRETE_1H);
+        if (!consultasDeAgora.isEmpty()){
+            logger.info("Iniciando envio de lembrete 1h para consultas da próxima hora.");
+            enviarLembrete(consultasDeAgora, TipoInteracao.LEMBRETE_1H);
+        }
     }
 
     /* private */ public void enviarLembrete(List<Consulta> consultas, TipoInteracao tipo) {
         for (Consulta consulta : consultas) {
             try {
-                logger.debug("Enviando mensagem para paciente: {}, consulta: {}", consulta.getPaciente().getNomePaciente(), consulta.getIdConsulta());
-                String toPaciente = normalizarTelefone(consulta.getPaciente().getTelefonePaciente());
-                String bodyPaciente = templateService.construirMensagem(consulta, consulta.getPaciente().getNomePaciente(), tipo);
-                //chatbotService.sendMessage(toPaciente, bodyPaciente);
+                logger.info("Enviando mensagem para paciente: {}, consulta: {}", consulta.getPaciente().getNomePaciente(), consulta.getIdConsulta());
+                JsonObject payload = templateService.construirMensagem(consulta, consulta.getPaciente().getNomePaciente(), tipo);
+                payload = Json.createObjectBuilder(payload)
+                        .add("to", normalizarTelefone(consulta.getPaciente().getTelefonePaciente())).build();
+                chatbotService.enviarMensagem(payload, tipo);
 
                 Set<Cuidador> cuidadores = consulta.getPaciente().getCuidadores();
                 String receptorTipo = "PACIENTE";
@@ -67,14 +74,7 @@ public class InteracaoAutomatizadaService {
                     receptorTipo = "AMBOS";
                 }
 
-                InteracaoAutomatizada novaInteracao = new InteracaoAutomatizada(consulta, consulta.getPaciente());
-                novaInteracao.setTipoInteracao(tipo.getTipo());
-                novaInteracao.setReceptorTipo(receptorTipo);
-                novaInteracao.setStatusInteracao("Lembrete enviado");
-                novaInteracao.setDetalhesInteracao("Lembrete de consulta (24h) enviado com sucesso via Chatbot para o Paciente.");
-                novaInteracao.setDataHoraInteracao(LocalDateTime.now());
-                novaInteracao.persist();
-                logger.info("Interação automatizada persistida para consulta {}.", consulta.getIdConsulta());
+                registrarInteracao(consulta, tipo, receptorTipo);
             } catch (Exception e) {
                 logger.error("Erro ao enviar mensagem para paciente {}: {}", consulta.getPaciente().getNomePaciente(), e.getMessage());
             }
@@ -84,18 +84,15 @@ public class InteracaoAutomatizadaService {
     public void enviaMensagemCuidador(Consulta consulta, TipoInteracao tipo) {
         for (Cuidador cuidador : consulta.getPaciente().getCuidadores()) {
             try {
-                logger.debug("Enviando mensagem para cuidador: {}, consulta: {}", cuidador.getNomeCuidador(), consulta.getIdConsulta());
-                String to = normalizarTelefone(cuidador.getTelefoneCuidador());
-                String body = templateService.construirMensagem(consulta, cuidador.getNomeCuidador(), tipo);
-                //chatbotService.sendMessage(to, body);
+                logger.info("Enviando mensagem para cuidador: {}, consulta: {}", cuidador.getNomeCuidador(), consulta.getIdConsulta());
+                JsonObject payload = templateService.construirMensagem(consulta, cuidador.getNomeCuidador(), tipo);
+                payload = Json.createObjectBuilder(payload)
+                        .add("to", normalizarTelefone(cuidador.getTelefoneCuidador())).build();
+                chatbotService.enviarMensagem(payload, tipo);
             } catch (Exception e) {
                 logger.error("Erro ao enviar mensagem para cuidador {}: {}", cuidador.getNomeCuidador(), e.getMessage());
             }
         }
-    }
-
-    private String normalizarTelefone(String numero) {
-        return "55" + numero.replaceAll("[^0-9]", "");
     }
 
     public List<InteracaoSistemaDTO> buscarHistoricoSistemaPorPaciente(Long idPaciente) {
@@ -113,14 +110,18 @@ public class InteracaoAutomatizadaService {
         return interacoesDTO;
     }
 
-    private LembreteConsultaDTO criarEPouplarDTO(Consulta consulta){
-        /*LembreteConsultaDTO dadosParaEnvio = new LembreteConsultaDTO();
-        dadosParaEnvio.setNomePaciente(consulta.getPaciente().getNome());
-        dadosParaEnvio.setTelefonePaciente(consulta.getPaciente().getTelefone());
-        dadosParaEnvio.setEspecialidadeConsulta(consulta.getProfissional().getEspecialidade());
-        dadosParaEnvio.setNomeProfissional(consulta.getProfissional().getNome());
-        dadosParaEnvio.setDataHoraConsulta(consulta.getDataHora());
-        dadosParaEnvio.setIdConsulta(consulta.getId().toString());*/
-        return null;
+    public void registrarInteracao(Consulta consulta, TipoInteracao tipo, String receptorTipo){
+        InteracaoAutomatizada novaInteracao = new InteracaoAutomatizada(consulta, consulta.getPaciente());
+        novaInteracao.setTipoInteracao(tipo.getTipo());
+        novaInteracao.setReceptorTipo(receptorTipo);
+        novaInteracao.setStatusInteracao("Lembrete enviado");
+        novaInteracao.setDetalhesInteracao("Lembrete de consulta (24h) enviado com sucesso via Chatbot para o Paciente.");
+        novaInteracao.setDataHoraInteracao(LocalDateTime.now());
+        novaInteracao.persist();
+        logger.info("Interação automatizada persistida para consulta {}.", consulta.getIdConsulta());
+    }
+
+    private String normalizarTelefone(String numero) {
+        return "55" + numero.replaceAll("[^0-9]", "");
     }
 }

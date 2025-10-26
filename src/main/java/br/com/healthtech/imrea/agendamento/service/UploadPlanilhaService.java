@@ -104,7 +104,7 @@ public class UploadPlanilhaService {
         uploadLog.setNumRegistrosComErro(comErro);
 
         /* REMOVER ESSA LINHA AQUI DEPOIS */
-        interacaoAutomatizadaService.enviarLembrete(listaConsultas, TipoInteracao.LEMBRETE_24H);
+        interacaoAutomatizadaService.enviarLembrete(listaConsultas, TipoInteracao.LEMBRETE_1H);
 
         if (uploadLog.getNumRegistrosComErro() > 0) {
             uploadLog.setStatusUpload("FINALIZADO COM ERROS");
