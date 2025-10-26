@@ -15,19 +15,19 @@ public class Cuidador extends PanacheEntityBase {
     @SequenceGenerator(name = "cuidadorSequence", sequenceName = "TB_CAR_CUIDADOR_id_cuidador_SEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "cuidadorSequence")
     @Column(name="id_cuidador")
-    public Long idCuidador;
+    private Long idCuidador;
 
     @ManyToMany(mappedBy = "cuidadores")
-    public Set<Paciente> pacientes = new HashSet<>();
+    private Set<Paciente> pacientes = new HashSet<>();
 
     @Column(name="nome_cuidador")
-    public String nomeCuidador;
+    private String nomeCuidador;
 
     @Column(name="telefone_cuidador")
-    public String telefoneCuidador;
+    private String telefoneCuidador;
 
     @Column(name="dt_criacao")
-    public LocalDateTime dtCriacaoCuidador;
+    private LocalDateTime dtCriacaoCuidador;
 
     public Cuidador() {
     }
@@ -35,5 +35,45 @@ public class Cuidador extends PanacheEntityBase {
     public Cuidador(String nomeCuidador, String telefoneCuidador) {
         this.nomeCuidador = nomeCuidador;
         this.telefoneCuidador = telefoneCuidador;
+    }
+
+    public Long getIdCuidador() {
+        return idCuidador;
+    }
+
+    public void setIdCuidador(Long idCuidador) {
+        this.idCuidador = idCuidador;
+    }
+
+    public Set<Paciente> getPacientes() {
+        return pacientes;
+    }
+
+    public void setPacientes(Set<Paciente> pacientes) {
+        this.pacientes = pacientes;
+    }
+
+    public String getNomeCuidador() {
+        return nomeCuidador;
+    }
+
+    public void setNomeCuidador(String nomeCuidador) {
+        this.nomeCuidador = nomeCuidador;
+    }
+
+    public String getTelefoneCuidador() {
+        return telefoneCuidador;
+    }
+
+    public void setTelefoneCuidador(String telefoneCuidador) {
+        this.telefoneCuidador = telefoneCuidador;
+    }
+
+    public LocalDateTime getDtCriacaoCuidador() {
+        return dtCriacaoCuidador;
+    }
+
+    public void setDtCriacaoCuidador(LocalDateTime dtCriacaoCuidador) {
+        this.dtCriacaoCuidador = dtCriacaoCuidador;
     }
 }

@@ -17,26 +17,26 @@ public class TemplateMensagemService {
     }
 
     private String construirMensagem24HorasConsulta(Consulta consulta, String nomeDestinatario) {
-        String dataFormatada = consulta.dataAgenda.toLocalDate().toString();
-        String horaFormatada = consulta.dataAgenda.toLocalTime().toString();
+        String dataFormatada = consulta.getDataAgenda().toLocalDate().toString();
+        String horaFormatada = consulta.getDataAgenda().toLocalTime().toString();
 
         return "Olá " + nomeDestinatario + "!\n\n" +
-                "Este é um lembrete da sua teleconsulta agendada de "+consulta.profissional.especialidadeProfissional+" com o(a) " + consulta.profissional.nomeProfissional + " do IMREA.\n\n" +
+                "Este é um lembrete da sua teleconsulta agendada de "+consulta.getProfissional().getEspecialidadeProfissional()+" com o(a) " + consulta.getProfissional().getNomeProfissional() + " do IMREA.\n\n" +
                 "Detalhes da sua consulta:\n" +
-                "Paciente: " + consulta.paciente.nomePaciente + "\n" +
+                "Paciente: " + consulta.getPaciente().getNomePaciente() + "\n" +
                 "- Data: *" + dataFormatada + "*\n" +
                 "- Horário: *" + horaFormatada + "*\n\n" +
                 "Amanhã, 1 hora antes do horário, enviaremos outro lembrete com mais informações. Em caso de dúvidas, nossa equipe está aqui para te ajudar.";
     }
 
     private String construirMensagem1HoraConsulta(Consulta consulta, String nomeDestinatario) {
-        String horaFormatada = consulta.dataAgenda.toLocalTime().toString();
+        String horaFormatada = consulta.getDataAgenda().toLocalTime().toString();
 
         return "🚨 *ATENÇÃO, " + nomeDestinatario + "!* 🚨\n\n" +
-                "Sua teleconsulta com o(a) " + consulta.profissional.nomeProfissional + " ("+consulta.profissional.especialidadeProfissional+") está marcada para *agora, às " + horaFormatada + "!*\n\n" +
+                "Sua teleconsulta com o(a) " + consulta.getProfissional().getNomeProfissional() + " ("+consulta.getProfissional().getEspecialidadeProfissional()+") está marcada para *agora, às " + horaFormatada + "!*\n\n" +
                 "Clique no link e use o código para entrar:\n" +
-                "🔗 *LINK DE ACESSO:* " + consulta.linkConsulta + "\n" +
-                "🔑 *CÓDIGO DE ACESSO:* " + consulta.codigoConsulta + "\n\n" +
+                "🔗 *LINK DE ACESSO:* " + consulta.getLinkConsulta() + "\n" +
+                "🔑 *CÓDIGO DE ACESSO:* " + consulta.getCodigoConsulta() + "\n\n" +
                 "✅ *O que fazer agora?*\n" +
                 "1. Clique no link acima.\n" +
                 "2. Digite o Código de Acesso.\n\n" +

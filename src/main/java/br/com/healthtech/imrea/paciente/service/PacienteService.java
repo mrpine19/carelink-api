@@ -38,17 +38,17 @@ public class PacienteService {
 
     @Transactional
     public Paciente buscarOuCriarPaciente(Paciente paciente){
-        if (paciente.nomePaciente == null || paciente.nomePaciente.isEmpty()){
+        if (paciente.getNomePaciente() == null || paciente.getNomePaciente().isEmpty()){
             throw new IllegalArgumentException("Nome do paciente inválido");
         }
-        Paciente pacienteExistente = Paciente.find("nomePaciente = ?1 and telefonePaciente = ?2", paciente.nomePaciente, paciente.telefonePaciente).firstResult();
+        Paciente pacienteExistente = Paciente.find("nomePaciente = ?1 and telefonePaciente = ?2", paciente.getNomePaciente(), paciente.getTelefonePaciente()).firstResult();
         if (pacienteExistente == null){
-            paciente.dtCriacaoPaciente = LocalDateTime.now();
+            paciente.setDtCriacaoPaciente(LocalDateTime.now());
             paciente.persist();
-            logger.info("Paciente {} salvo com sucesso!", paciente.nomePaciente);
+            logger.info("Paciente {} salvo com sucesso!", paciente.getNomePaciente());
             return paciente;
         }else {
-            logger.info("Paciente {} já existe!", paciente.nomePaciente);
+            logger.info("Paciente {} já existe!", paciente.getNomePaciente());
             return pacienteExistente;
         }
     }
@@ -63,12 +63,12 @@ public class PacienteService {
             throw new IllegalArgumentException("Paciente não encontrado");
 
         PacienteDTO pacienteDTO = new PacienteDTO();
-        pacienteDTO.setIdPaciente(paciente.idPaciente);
-        pacienteDTO.setNomePaciente(paciente.nomePaciente);
-        pacienteDTO.setTelefonePaciente(paciente.telefonePaciente);
-        pacienteDTO.setBairroPaciente(paciente.bairroPaciente);
-        pacienteDTO.setDataNascimentoPaciente(paciente.dataNascimentoPaciente.toString());
-        pacienteDTO.setScoreDeRisco(paciente.scoreDeRisco);
+        pacienteDTO.setIdPaciente(paciente.getIdPaciente());
+        pacienteDTO.setNomePaciente(paciente.getNomePaciente());
+        pacienteDTO.setTelefonePaciente(paciente.getTelefonePaciente());
+        pacienteDTO.setBairroPaciente(paciente.getBairroPaciente());
+        pacienteDTO.setDataNascimentoPaciente(paciente.getDataNascimentoPaciente().toString());
+        pacienteDTO.setScoreDeRisco(paciente.getScoreDeRisco());
 
         if (pacienteDTO.getScoreDeRisco() < 40)
             pacienteDTO.setNivelDeRisco("BAIXO");
@@ -78,9 +78,9 @@ public class PacienteService {
             pacienteDTO.setNivelDeRisco("ALTO");
 
         CuidadorDTO cuidadorDTO = new CuidadorDTO();
-        for (Cuidador cuidador : paciente.cuidadores) {
-            cuidadorDTO.setNomeCuidador(cuidador.nomeCuidador);
-            cuidadorDTO.setTelefoneCuidador(cuidador.telefoneCuidador);
+        for (Cuidador cuidador : paciente.getCuidadores()) {
+            cuidadorDTO.setNomeCuidador(cuidador.getNomeCuidador());
+            cuidadorDTO.setTelefoneCuidador(cuidador.getTelefoneCuidador());
         }
         pacienteDTO.setCuidador(cuidadorDTO);
 

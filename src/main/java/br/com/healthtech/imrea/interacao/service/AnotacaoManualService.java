@@ -27,13 +27,13 @@ public class AnotacaoManualService {
 
         for (AnotacaoManual anotacao : anotacoes) {
             InteracaoEquipeDTO interacao = new InteracaoEquipeDTO();
-            interacao.setId(anotacao.idAnotacao.toString());
+            interacao.setId(anotacao.getIdAnotacao().toString());
             interacao.setTipo("ANOTACAO_EQUIPE");
-            interacao.setData(anotacao.dataHoraAnotacao.toLocalDate().toString());
-            interacao.setHora(String.format("%02d:%02d", anotacao.dataHoraAnotacao.getHour(), anotacao.dataHoraAnotacao.getMinute()));
-            interacao.setAnotacao(anotacao.conteudoAnotacao);
-            interacao.setIdUsuario(anotacao.usuario.idUsuario.toString());
-            interacao.setNomeUsuario(anotacao.usuario.nomeUsuario);
+            interacao.setData(anotacao.getDataHoraAnotacao().toLocalDate().toString());
+            interacao.setHora(String.format("%02d:%02d", anotacao.getDataHoraAnotacao().getHour(), anotacao.getDataHoraAnotacao().getMinute()));
+            interacao.setAnotacao(anotacao.getConteudoAnotacao());
+            interacao.setIdUsuario(anotacao.getUsuario().getIdUsuario().toString());
+            interacao.setNomeUsuario(anotacao.getUsuario().getNomeUsuario());
             historico.add(interacao);
         }
         return historico;
@@ -71,7 +71,7 @@ public class AnotacaoManualService {
 
         AnotacaoManual anotacaoManual = new AnotacaoManual(paciente, usuario, anotacaoInputDTO.getConteudoAnotacao());
         anotacaoManual.persist();
-        logger.info("Anotação manual salva com sucesso para o paciente {} pelo usuário {}", paciente.nomePaciente, usuario.nomeUsuario);
+        logger.info("Anotação manual salva com sucesso para o paciente {} pelo usuário {}", paciente.getNomePaciente(), usuario.getNomeUsuario());
     }
 
     public void alterarAnotacao(AnotacaoUpdateDTO anotacaoUpdateDTO) {
@@ -103,8 +103,8 @@ public class AnotacaoManualService {
             throw new BadRequestException("Conteúdo da anotação inválido");
         }
 
-        anotacaoManual.conteudoAnotacao = anotacaoUpdateDTO.getNovoConteudo();
+        anotacaoManual.setConteudoAnotacao(anotacaoUpdateDTO.getNovoConteudo());
         anotacaoManual.persist();
-        logger.info("Anotação manual com id {} alterada com sucesso pelo usuário {}", anotacaoManual.idAnotacao, usuario.nomeUsuario);
+        logger.info("Anotação manual com id {} alterada com sucesso pelo usuário {}", anotacaoManual.getIdAnotacao(), usuario.getNomeUsuario());
     }
 }

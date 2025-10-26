@@ -71,9 +71,9 @@ public class UploadPlanilhaService {
     public void salvarDadosAgendamento(List<RegistroAgendamento> listasAgendamentos) {
 
         UploadLog uploadLog = new UploadLog();
-        uploadLog.dataHoraUpload = LocalDateTime.now();
-        uploadLog.statusUpload = "EM_PROCESSAMENTO";
-        uploadLog.usuario = usuarioService.buscarUsuarioTeste();
+        uploadLog.setDataHoraUpload(LocalDateTime.now());
+        uploadLog.setStatusUpload("EM_PROCESSAMENTO");
+        uploadLog.setUsuario(usuarioService.buscarUsuarioTeste());
         uploadLog.persist();
 
         StringBuilder detalhesErrosBuilder = new StringBuilder();
@@ -81,13 +81,16 @@ public class UploadPlanilhaService {
         /* REMOVER ESSA LINHA AQUI DEPOIS */
         listaConsultas = new ArrayList<>();
 
+        int processados = 0;
+        int comErro = 0;
+
         for (RegistroAgendamento registro : listasAgendamentos) {
             try {
                 processarUmRegistroComTransacao(registro, uploadLog);
-                uploadLog.numRegistrosProcessados++;
+                processados++;
             } catch (Exception e) {
                 logger.error("Erro ao processar linha: " + e.getMessage(), e);
-                uploadLog.numRegistrosComErro++;
+                comErro++;
                 detalhesErrosBuilder.append("Erro na linha do paciente ")
                         .append(registro.getNomePaciente())
                         .append(": ")
@@ -96,14 +99,18 @@ public class UploadPlanilhaService {
             }
         }
 
+        // Atribui os contadores após o loop
+        uploadLog.setNumRegistrosProcessados(processados);
+        uploadLog.setNumRegistrosComErro(comErro);
+
         /* REMOVER ESSA LINHA AQUI DEPOIS */
         interacaoAutomatizadaService.enviarLembrete(listaConsultas, TipoInteracao.LEMBRETE_24H);
 
-        if (uploadLog.numRegistrosComErro > 0) {
-            uploadLog.statusUpload = "FINALIZADO COM ERROS";
-            uploadLog.detalhesErros = detalhesErrosBuilder.toString();
+        if (uploadLog.getNumRegistrosComErro() > 0) {
+            uploadLog.setStatusUpload("FINALIZADO COM ERROS");
+            uploadLog.setDetalhesErros(detalhesErrosBuilder.toString());
         } else {
-            uploadLog.statusUpload = "SUCESSO";
+            uploadLog.setStatusUpload("SUCESSO");
         }
 
         uploadLog.persist();

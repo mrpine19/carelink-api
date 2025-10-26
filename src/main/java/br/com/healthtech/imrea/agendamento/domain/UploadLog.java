@@ -14,28 +14,94 @@ public class UploadLog extends PanacheEntityBase {
     @SequenceGenerator(name = "uploadSequence", sequenceName = "TB_CAR_UPLOAD_LOG_id_upload_SEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "uploadSequence")
     @Column(name="id_upload")
-    public Long idUpload;
+    private Long idUpload;
 
     @ManyToOne()
     @JoinColumn(name="id_usuario")
-    public Usuario usuario;
+    private Usuario usuario;
 
     @Column(name="data_hora_upload")
-    public LocalDateTime dataHoraUpload;
+    private LocalDateTime dataHoraUpload;
 
     @Column(name="nome_arquivo")
-    public String nomeArquivo;
+    private String nomeArquivo;
 
     @Column(name="status_upload")
-    public String statusUpload;
+    private String statusUpload;
 
     @Column (name="num_registros_processados")
-    public int numRegistrosProcessados;
+    private int numRegistrosProcessados;
 
     @Column(name="num_registros_com_erro")
-    public int numRegistrosComErro;
+    private int numRegistrosComErro;
 
     @Column(name="detalhes_erros")
-    public String detalhesErros;
+    private String detalhesErros;
 
+    public UploadLog() {
+    }
+
+    public Long getIdUpload() {
+        return idUpload;
+    }
+
+    public void setIdUpload(Long idUpload) {
+        this.idUpload = idUpload;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+
+    public LocalDateTime getDataHoraUpload() {
+        return dataHoraUpload;
+    }
+
+    public void setDataHoraUpload(LocalDateTime dataHoraUpload) {
+        this.dataHoraUpload = dataHoraUpload;
+    }
+
+    public String getNomeArquivo() {
+        return nomeArquivo;
+    }
+
+    public void setNomeArquivo(String nomeArquivo) {
+        this.nomeArquivo = nomeArquivo;
+    }
+
+    public String getStatusUpload() {
+        return statusUpload;
+    }
+
+    public void setStatusUpload(String statusUpload) {
+        this.statusUpload = statusUpload;
+    }
+
+    public int getNumRegistrosProcessados() {
+        return numRegistrosProcessados;
+    }
+
+    public void setNumRegistrosProcessados(int numRegistrosProcessados) {
+        this.numRegistrosProcessados = numRegistrosProcessados;
+    }
+
+    public int getNumRegistrosComErro() {
+        return numRegistrosComErro;
+    }
+
+    public void setNumRegistrosComErro(int numRegistrosComErro) {
+        this.numRegistrosComErro = numRegistrosComErro;
+    }
+
+    public String getDetalhesErros() {
+        return detalhesErros;
+    }
+
+    public void setDetalhesErros(String detalhesErros) {
+        this.detalhesErros = detalhesErros;
+    }
 }

@@ -14,40 +14,40 @@ public class Consulta extends PanacheEntityBase {
     @SequenceGenerator(name = "consultaSequence", sequenceName = "TB_CAR_CONSULTA_id_consulta_SEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "consultaSequence")
     @Column(name="id_consulta")
-    public Long idConsulta;
+    private Long idConsulta;
 
     @ManyToOne
     @JoinColumn(name = "id_paciente")
-    public Paciente paciente;
+    private Paciente paciente;
 
     @ManyToOne
     @JoinColumn(name="id_profissional")
-    public Profissional profissional;
+    private Profissional profissional;
 
     @ManyToOne
     @JoinColumn(name="id_upload")
-    public UploadLog uploadLog;
+    private UploadLog uploadLog;
 
     @Column(name="data_agenda")
-    public LocalDateTime dataAgenda;
+    private LocalDateTime dataAgenda;
 
     @Column(name="link_acesso")
-    public String linkConsulta;
+    private String linkConsulta;
 
     @Column(name="codigo_acesso")
-    public String codigoConsulta;
+    private String codigoConsulta;
 
     @Column(name="obs_agendamento")
-    public String obsConsulta;
+    private String obsConsulta;
 
     @Column(name="status_consulta")
-    public String statusConsulta;
+    private String statusConsulta;
 
     @Column(name="data_registro_status")
-    public LocalDateTime dataRegistroStatus;
+    private LocalDateTime dataRegistroStatus;
 
     @Column(name="dt_criacao")
-    public LocalDateTime dtCriacaoConsulta;
+    private LocalDateTime dtCriacaoConsulta;
 
     public Consulta() {
     }
@@ -59,5 +59,93 @@ public class Consulta extends PanacheEntityBase {
         this.linkConsulta = linkConsulta;
         this.codigoConsulta = codigoConsulta;
         this.obsConsulta = obsConsulta;
+    }
+
+    public Long getIdConsulta() {
+        return idConsulta;
+    }
+
+    public void setIdConsulta(Long idConsulta) {
+        this.idConsulta = idConsulta;
+    }
+
+    public Paciente getPaciente() {
+        return paciente;
+    }
+
+    public void setPaciente(Paciente paciente) {
+        this.paciente = paciente;
+    }
+
+    public Profissional getProfissional() {
+        return profissional;
+    }
+
+    public void setProfissional(Profissional profissional) {
+        this.profissional = profissional;
+    }
+
+    public UploadLog getUploadLog() {
+        return uploadLog;
+    }
+
+    public void setUploadLog(UploadLog uploadLog) {
+        this.uploadLog = uploadLog;
+    }
+
+    public LocalDateTime getDataAgenda() {
+        return dataAgenda;
+    }
+
+    public void setDataAgenda(LocalDateTime dataAgenda) {
+        this.dataAgenda = dataAgenda;
+    }
+
+    public String getLinkConsulta() {
+        return linkConsulta;
+    }
+
+    public void setLinkConsulta(String linkConsulta) {
+        this.linkConsulta = linkConsulta;
+    }
+
+    public String getCodigoConsulta() {
+        return codigoConsulta;
+    }
+
+    public void setCodigoConsulta(String codigoConsulta) {
+        this.codigoConsulta = codigoConsulta;
+    }
+
+    public String getObsConsulta() {
+        return obsConsulta;
+    }
+
+    public void setObsConsulta(String obsConsulta) {
+        this.obsConsulta = obsConsulta;
+    }
+
+    public String getStatusConsulta() {
+        return statusConsulta;
+    }
+
+    public void setStatusConsulta(String statusConsulta) {
+        this.statusConsulta = statusConsulta;
+    }
+
+    public LocalDateTime getDataRegistroStatus() {
+        return dataRegistroStatus;
+    }
+
+    public void setDataRegistroStatus(LocalDateTime dataRegistroStatus) {
+        this.dataRegistroStatus = dataRegistroStatus;
+    }
+
+    public LocalDateTime getDtCriacaoConsulta() {
+        return dtCriacaoConsulta;
+    }
+
+    public void setDtCriacaoConsulta(LocalDateTime dtCriacaoConsulta) {
+        this.dtCriacaoConsulta = dtCriacaoConsulta;
     }
 }

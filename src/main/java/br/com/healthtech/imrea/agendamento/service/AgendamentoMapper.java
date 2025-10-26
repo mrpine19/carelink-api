@@ -44,9 +44,9 @@ public class AgendamentoMapper {
         );
 
         Cuidador cuidador = new Cuidador(registro.getNomeAcompanhante(), registro.getNumeroAcompanhante());
-        paciente.cuidadores.add(cuidadorService.buscarOuCriarCuidador(cuidador));
+        paciente.getCuidadores().add(cuidadorService.buscarOuCriarCuidador(cuidador));
 
-        paciente.bairroPaciente = cepService.obterBairroPaciente(registro.getCep());
+        paciente.setBairroPaciente(cepService.obterBairroPaciente(registro.getCep()));
 
         return pacienteService.buscarOuCriarPaciente(paciente);
     }
@@ -68,7 +68,7 @@ public class AgendamentoMapper {
                 registro.getObsAgendamento()
         );
 
-        consulta.uploadLog = uploadLog;
+        consulta.setUploadLog(uploadLog);
 
         return consultaService.buscarOuCriarConsulta(consulta);
     }

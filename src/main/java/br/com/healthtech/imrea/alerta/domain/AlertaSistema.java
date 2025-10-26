@@ -17,42 +17,141 @@ public class AlertaSistema extends PanacheEntityBase {
     @SequenceGenerator(name = "alertaSistemaSequence", sequenceName = "TB_CAR_ALERTA_SISTEMA_id_alerta_SEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "alertaSistemaSequence")
     @Column(name="id_alerta")
-    public Long idAlerta;
+    private Long idAlerta;
 
     @ManyToOne
     @JoinColumn(name="id_consulta")
-    public Consulta consulta;
+    private Consulta consulta;
 
     @ManyToOne
     @JoinColumn(name="id_paciente", nullable = false)
-    public Paciente paciente;
+    private Paciente paciente;
 
     @ManyToOne
     @JoinColumn(name="id_cuidador")
-    public Cuidador cuidador;
+    private Cuidador cuidador;
 
     @ManyToOne
     @JoinColumn(name="id_interacao")
-    public InteracaoAutomatizada interacaoAutomatizada;
+    private InteracaoAutomatizada interacaoAutomatizada;
 
     @Column(name="tipo_alerta")
-    public String tipoAlerta;
+    private String tipoAlerta;
 
     @Column(name="status_alerta")
-    public String statusAlerta;
+    private String statusAlerta;
 
     @Column(name="prioridade_alerta")
-    public String prioridadeAlerta;
+    private String prioridadeAlerta;
 
     @Column(name="detalhes_contribuicao_risco")
-    public String detalhesContribuicaoRisco;
+    private String detalhesContribuicaoRisco;
 
     @Column(name="acao_tomada")
-    public String acaoTomada;
+    private String acaoTomada;
 
     @Column(name="data_hora_Acao")
-    public LocalDateTime dataHoraAcao;
+    private LocalDateTime dataHoraAcao;
 
     @Column(name="dt_criacao")
-    public LocalDateTime dtCriacaoAlerta;
+    private LocalDateTime dtCriacaoAlerta;
+
+    public AlertaSistema() {
+    }
+
+    public Long getIdAlerta() {
+        return idAlerta;
+    }
+
+    public void setIdAlerta(Long idAlerta) {
+        this.idAlerta = idAlerta;
+    }
+
+    public Consulta getConsulta() {
+        return consulta;
+    }
+
+    public void setConsulta(Consulta consulta) {
+        this.consulta = consulta;
+    }
+
+    public Paciente getPaciente() {
+        return paciente;
+    }
+
+    public void setPaciente(Paciente paciente) {
+        this.paciente = paciente;
+    }
+
+    public Cuidador getCuidador() {
+        return cuidador;
+    }
+
+    public void setCuidador(Cuidador cuidador) {
+        this.cuidador = cuidador;
+    }
+
+    public InteracaoAutomatizada getInteracaoAutomatizada() {
+        return interacaoAutomatizada;
+    }
+
+    public void setInteracaoAutomatizada(InteracaoAutomatizada interacaoAutomatizada) {
+        this.interacaoAutomatizada = interacaoAutomatizada;
+    }
+
+    public String getTipoAlerta() {
+        return tipoAlerta;
+    }
+
+    public void setTipoAlerta(String tipoAlerta) {
+        this.tipoAlerta = tipoAlerta;
+    }
+
+    public String getStatusAlerta() {
+        return statusAlerta;
+    }
+
+    public void setStatusAlerta(String statusAlerta) {
+        this.statusAlerta = statusAlerta;
+    }
+
+    public String getPrioridadeAlerta() {
+        return prioridadeAlerta;
+    }
+
+    public void setPrioridadeAlerta(String prioridadeAlerta) {
+        this.prioridadeAlerta = prioridadeAlerta;
+    }
+
+    public String getDetalhesContribuicaoRisco() {
+        return detalhesContribuicaoRisco;
+    }
+
+    public void setDetalhesContribuicaoRisco(String detalhesContribuicaoRisco) {
+        this.detalhesContribuicaoRisco = detalhesContribuicaoRisco;
+    }
+
+    public String getAcaoTomada() {
+        return acaoTomada;
+    }
+
+    public void setAcaoTomada(String acaoTomada) {
+        this.acaoTomada = acaoTomada;
+    }
+
+    public LocalDateTime getDataHoraAcao() {
+        return dataHoraAcao;
+    }
+
+    public void setDataHoraAcao(LocalDateTime dataHoraAcao) {
+        this.dataHoraAcao = dataHoraAcao;
+    }
+
+    public LocalDateTime getDtCriacaoAlerta() {
+        return dtCriacaoAlerta;
+    }
+
+    public void setDtCriacaoAlerta(LocalDateTime dtCriacaoAlerta) {
+        this.dtCriacaoAlerta = dtCriacaoAlerta;
+    }
 }
