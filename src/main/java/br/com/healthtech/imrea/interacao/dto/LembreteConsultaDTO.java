@@ -1,14 +1,12 @@
 package br.com.healthtech.imrea.interacao.dto;
 
-import java.time.LocalDateTime;
-
 public class LembreteConsultaDTO {
     private String idConsulta;
     private String nomePaciente;
-    private String telefonePaciente;
     private String especialidadeConsulta;
     private String nomeProfissional;
-    private LocalDateTime dataHoraConsulta;
+    private String dataConsulta;
+    private String horaConsulta;
 
     public String getIdConsulta() {
         return idConsulta;
@@ -24,14 +22,6 @@ public class LembreteConsultaDTO {
 
     public void setNomePaciente(String nomePaciente) {
         this.nomePaciente = nomePaciente;
-    }
-
-    public String getTelefonePaciente() {
-        return telefonePaciente;
-    }
-
-    public void setTelefonePaciente(String telefonePaciente) {
-        this.telefonePaciente = telefonePaciente;
     }
 
     public String getEspecialidadeConsulta() {
@@ -50,11 +40,19 @@ public class LembreteConsultaDTO {
         this.nomeProfissional = nomeProfissional;
     }
 
-    public LocalDateTime getDataHoraConsulta() {
-        return dataHoraConsulta;
+    public String getDataConsulta() {
+        return dataConsulta;
     }
 
-    public void setDataHoraConsulta(LocalDateTime dataHoraConsulta) {
-        this.dataHoraConsulta = dataHoraConsulta;
+    public void setDataConsulta(String dataConsulta) {
+        this.dataConsulta = dataConsulta;
+    }
+
+    public String getHoraConsulta() {
+        return horaConsulta;
+    }
+
+    public void setHoraConsulta(String horaConsulta) {
+        this.horaConsulta = horaConsulta;
     }
 }

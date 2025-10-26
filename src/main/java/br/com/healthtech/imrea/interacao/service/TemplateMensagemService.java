@@ -2,44 +2,95 @@ package br.com.healthtech.imrea.interacao.service;
 
 import br.com.healthtech.imrea.agendamento.domain.Consulta;
 import br.com.healthtech.imrea.interacao.domain.TipoInteracao;
+import br.com.healthtech.imrea.interacao.dto.LembreteConsultaDTO;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.json.Json;
+import jakarta.json.JsonArrayBuilder;
+import jakarta.json.JsonObject;
 
 @ApplicationScoped
 public class TemplateMensagemService {
 
-    public String construirMensagem(Consulta consulta, String nomeDestinatario, TipoInteracao tipo) {
+    public JsonObject construirMensagem(Consulta consulta, String nomeDestinatario, TipoInteracao tipo) {
         if (tipo == TipoInteracao.LEMBRETE_24H)
             return construirMensagem24HorasConsulta(consulta, nomeDestinatario);
         else if (tipo == TipoInteracao.LEMBRETE_1H)
             return construirMensagem1HoraConsulta(consulta, nomeDestinatario);
 
-        return "";
+        return null;
     }
 
-    private String construirMensagem24HorasConsulta(Consulta consulta, String nomeDestinatario) {
-        String dataFormatada = consulta.getDataAgenda().toLocalDate().toString();
-        String horaFormatada = consulta.getDataAgenda().toLocalTime().toString();
+    private JsonObject construirMensagem24HorasConsulta(Consulta consulta, String nomeDestinatario) {
+        LembreteConsultaDTO lembreteConsultaDTO = criarEPouplarDTO(consulta);
 
-        return "Olá " + nomeDestinatario + "!\n\n" +
-                "Este é um lembrete da sua teleconsulta agendada de "+consulta.getProfissional().getEspecialidadeProfissional()+" com o(a) " + consulta.getProfissional().getNomeProfissional() + " do IMREA.\n\n" +
-                "Detalhes da sua consulta:\n" +
-                "Paciente: " + consulta.getPaciente().getNomePaciente() + "\n" +
-                "- Data: *" + dataFormatada + "*\n" +
-                "- Horário: *" + horaFormatada + "*\n\n" +
-                "Amanhã, 1 hora antes do horário, enviaremos outro lembrete com mais informações. Em caso de dúvidas, nossa equipe está aqui para te ajudar.";
+        JsonObject body = Json.createObjectBuilder()
+                .add("text", String.format("Olá, %s! Sou o CareLink e estou aqui para garantir que você não perca sua teleconsulta.\n\n" +
+                                "A consulta de %s com o(a) Dr(a). %s está agendada para:\n\n" +
+                                "📅 Data: *%s*\n⏰ Horário: *%s*\n\n" +
+                                "Por favor, confirme abaixo sua presença. Sua resposta nos ajuda a organizar a agenda do hospital!",
+                        nomeDestinatario, lembreteConsultaDTO.getEspecialidadeConsulta(), lembreteConsultaDTO.getNomeProfissional(),
+                        lembreteConsultaDTO.getDataConsulta(), lembreteConsultaDTO.getHoraConsulta()))
+                .build();
+
+        JsonObject footer = Json.createObjectBuilder()
+                .add("text", "Responda para garantir seu horário. Seu link e código serão enviados no próximo lembrete.")
+                .build();
+
+        JsonArrayBuilder buttonsArrayBuilder = Json.createArrayBuilder()
+                .add(Json.createObjectBuilder()
+                        .add("type", "quick_reply")
+                        .add("title", "✅ Sim, irei comparecer")
+                        .add("id", "CONFIRM_PRESENCE_SIM"))
+                .add(Json.createObjectBuilder()
+                        .add("type", "quick_reply")
+                        .add("title", "❌ Preciso reagendar/cancelar")
+                        .add("id", "CONFIRM_PRESENCE_NAO"))
+                .add(Json.createObjectBuilder()
+                        .add("type", "quick_reply")
+                        .add("title", "❓ Tenho dúvidas sobre o acesso")
+                        .add("id", "CONFIRM_DUVIDA_ACESSO"));
+
+        JsonObject action = Json.createObjectBuilder()
+                .add("buttons", buttonsArrayBuilder)
+                .build();
+
+        return Json.createObjectBuilder()
+                .add("body", body)
+                .add("footer", footer)
+                .add("action", action)
+                .add("type", "button")
+                .build();
     }
 
-    private String construirMensagem1HoraConsulta(Consulta consulta, String nomeDestinatario) {
+    private JsonObject construirMensagem1HoraConsulta(Consulta consulta, String nomeDestinatario) {
         String horaFormatada = consulta.getDataAgenda().toLocalTime().toString();
 
-        return "🚨 *ATENÇÃO, " + nomeDestinatario + "!* 🚨\n\n" +
-                "Sua teleconsulta com o(a) " + consulta.getProfissional().getNomeProfissional() + " ("+consulta.getProfissional().getEspecialidadeProfissional()+") está marcada para *agora, às " + horaFormatada + "!*\n\n" +
+        String body = String.format("🚨 *ATENÇÃO, %s!* 🚨\n\n" +
+                "A teleconsulta com o(a) %s (%s) está marcada para *agora, às %s!*\n\n" +
                 "Clique no link e use o código para entrar:\n" +
-                "🔗 *LINK DE ACESSO:* " + consulta.getLinkConsulta() + "\n" +
-                "🔑 *CÓDIGO DE ACESSO:* " + consulta.getCodigoConsulta() + "\n\n" +
+                "🔗 *LINK DE ACESSO:* %s\n" +
+                "🔑 *CÓDIGO DE ACESSO:* %s\n\n" +
                 "✅ *O que fazer agora?*\n" +
                 "1. Clique no link acima.\n" +
                 "2. Digite o Código de Acesso.\n\n" +
-                "*Precisa de ajuda imediata?* Responda AGORA a esta mensagem com a palavra 'AJUDA' para que nosso assistente possa te auxiliar.";
+                "*Precisa de ajuda imediata?* Responda AGORA a esta mensagem com a palavra 'AJUDA' para que nosso assistente possa te auxiliar.",
+                nomeDestinatario, consulta.getProfissional().getNomeProfissional(), consulta.getProfissional().getEspecialidadeProfissional(), horaFormatada,
+                consulta.getLinkConsulta(), consulta.getCodigoConsulta());
+
+        return Json.createObjectBuilder()
+                .add("body", body)
+                .build();
+
+    }
+
+    private LembreteConsultaDTO criarEPouplarDTO(Consulta consulta){
+        LembreteConsultaDTO dadosParaEnvio = new LembreteConsultaDTO();
+        dadosParaEnvio.setNomePaciente(consulta.getPaciente().getNomePaciente());
+        dadosParaEnvio.setEspecialidadeConsulta(consulta.getProfissional().getEspecialidadeProfissional());
+        dadosParaEnvio.setNomeProfissional(consulta.getProfissional().getNomeProfissional());
+        dadosParaEnvio.setDataConsulta(consulta.getDataAgenda().toString());
+        dadosParaEnvio.setHoraConsulta(String.format("%02d:%02d", consulta.getDataAgenda().getHour(), consulta.getDataAgenda().getMinute()));
+        dadosParaEnvio.setIdConsulta(consulta.getIdConsulta().toString());
+        return dadosParaEnvio;
     }
 }
