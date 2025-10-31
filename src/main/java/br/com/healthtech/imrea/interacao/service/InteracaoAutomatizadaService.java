@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -121,7 +122,7 @@ public class InteracaoAutomatizadaService {
         for (InteracaoAutomatizada interacao : interacoes) {
             InteracaoSistemaDTO dto = new InteracaoSistemaDTO();
             dto.setTipo("INTERACAO_SISTEMA");
-            dto.setData(interacao.getDataHoraInteracao().toLocalDate().toString());
+            dto.setData(interacao.getDataHoraInteracao().toLocalDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
             dto.setHora(String.format("%02d:%02d", interacao.getDataHoraInteracao().getHour(), interacao.getDataHoraInteracao().getMinute()));
             dto.setLog(interacao.getDetalhesInteracao());
             interacoesDTO.add(dto);

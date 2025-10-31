@@ -37,12 +37,14 @@ public class AlertaSistemaService {
             alertaDTO.setEspecialidadeConsulta(consulta.getProfissional().getEspecialidadeProfissional());
             alertaDTO.setHoraConsulta(consulta.getDataAgenda().toLocalTime().toString());
 
-            if (alertaDTO.getScoreDeRisco() < 40)
+            if (alertaDTO.getScoreDeRisco() <= 200)
                 alertaDTO.setNivelDeRisco(AlertaDTO.NivelRisco.BAIXO);
-            else if (alertaDTO.getScoreDeRisco() >= 40 && alertaDTO.getScoreDeRisco() < 75)
+            else if (alertaDTO.getScoreDeRisco() > 200 && alertaDTO.getScoreDeRisco() <= 500)
                 alertaDTO.setNivelDeRisco(AlertaDTO.NivelRisco.MEDIO);
-            else if (alertaDTO.getScoreDeRisco() >= 75)
+            else if (alertaDTO.getScoreDeRisco() > 500 && alertaDTO.getScoreDeRisco() <= 800)
                 alertaDTO.setNivelDeRisco(AlertaDTO.NivelRisco.ALTO);
+            else
+                alertaDTO.setNivelDeRisco(AlertaDTO.NivelRisco.CRITICO);
 
             buscarUltimoAlertaServiceAtivo(alertaDTO);
             alertas.add(alertaDTO);
