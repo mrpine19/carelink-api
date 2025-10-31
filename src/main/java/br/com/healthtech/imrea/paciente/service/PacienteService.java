@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,15 +68,17 @@ public class PacienteService {
         pacienteDTO.setNomePaciente(paciente.getNomePaciente());
         pacienteDTO.setTelefonePaciente(paciente.getTelefonePaciente());
         pacienteDTO.setBairroPaciente(paciente.getBairroPaciente());
-        pacienteDTO.setDataNascimentoPaciente(paciente.getDataNascimentoPaciente().toString());
+        pacienteDTO.setDataNascimentoPaciente(paciente.getDataNascimentoPaciente().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
         pacienteDTO.setScoreDeRisco(paciente.getScoreDeRisco());
 
-        if (pacienteDTO.getScoreDeRisco() < 40)
+        if (pacienteDTO.getScoreDeRisco() <= 200)
             pacienteDTO.setNivelDeRisco("BAIXO");
-        if (pacienteDTO.getScoreDeRisco() >= 40 && pacienteDTO.getScoreDeRisco() < 75)
+        if (pacienteDTO.getScoreDeRisco() > 200 && pacienteDTO.getScoreDeRisco() <= 500)
             pacienteDTO.setNivelDeRisco("MEDIO");
-        if (pacienteDTO.getScoreDeRisco() >= 75)
+        if (pacienteDTO.getScoreDeRisco() > 500 && pacienteDTO.getScoreDeRisco() <= 800)
             pacienteDTO.setNivelDeRisco("ALTO");
+        if (pacienteDTO.getScoreDeRisco() > 800)
+            pacienteDTO.setNivelDeRisco("CRITICO");
 
         CuidadorDTO cuidadorDTO = new CuidadorDTO();
         for (Cuidador cuidador : paciente.getCuidadores()) {

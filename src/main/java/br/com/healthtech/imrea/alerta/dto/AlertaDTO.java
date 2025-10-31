@@ -18,6 +18,7 @@ public class AlertaDTO {
     private PrioridadeAlerta prioridadeAlerta;
 
     public enum NivelRisco {
+        CRITICO,
         ALTO,
         MEDIO,
         BAIXO

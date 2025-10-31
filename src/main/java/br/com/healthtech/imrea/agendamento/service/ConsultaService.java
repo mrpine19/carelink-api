@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,7 +77,7 @@ public class ConsultaService {
         }
 
         ConsultaDTO consultaDTO = new ConsultaDTO();
-        consultaDTO.setDataConsulta(consulta.getDataAgenda().toLocalDate().toString());
+        consultaDTO.setDataConsulta(consulta.getDataAgenda().toLocalDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
         consultaDTO.setHoraConsulta(consulta.getDataAgenda().toLocalTime().toString());
         consultaDTO.setNomeMedico(consulta.getProfissional() != null ? consulta.getProfissional().getNomeProfissional() : null);
         consultaDTO.setEspecialidadeConsulta(consulta.getProfissional() != null ? consulta.getProfissional().getEspecialidadeProfissional() : null);
@@ -90,7 +91,7 @@ public class ConsultaService {
         for (Consulta consulta : consultas) {
             InteracaoConsultaDTO consultaDTO = new InteracaoConsultaDTO();
             consultaDTO.setTipo("CONSULTA");
-            consultaDTO.setData(consulta.getDataAgenda().toLocalDate().toString());
+            consultaDTO.setData(consulta.getDataAgenda().toLocalDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
             consultaDTO.setHora(consulta.getDataAgenda().toLocalTime().toString());
             consultaDTO.setStatus(consulta.getStatusConsulta());
             consultaDTO.setModalidade("Telemedicina");

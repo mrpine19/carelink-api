@@ -13,6 +13,7 @@ import jakarta.ws.rs.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +30,7 @@ public class AnotacaoManualService {
             InteracaoEquipeDTO interacao = new InteracaoEquipeDTO();
             interacao.setId(anotacao.getIdAnotacao().toString());
             interacao.setTipo("ANOTACAO_EQUIPE");
-            interacao.setData(anotacao.getDataHoraAnotacao().toLocalDate().toString());
+            interacao.setData(anotacao.getDataHoraAnotacao().toLocalDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
             interacao.setHora(String.format("%02d:%02d", anotacao.getDataHoraAnotacao().getHour(), anotacao.getDataHoraAnotacao().getMinute()));
             interacao.setAnotacao(anotacao.getConteudoAnotacao());
             interacao.setIdUsuario(anotacao.getUsuario().getIdUsuario().toString());
