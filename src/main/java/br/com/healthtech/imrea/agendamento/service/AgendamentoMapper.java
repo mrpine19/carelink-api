@@ -4,6 +4,7 @@ import br.com.healthtech.imrea.agendamento.domain.Consulta;
 import br.com.healthtech.imrea.agendamento.domain.Profissional;
 import br.com.healthtech.imrea.agendamento.domain.RegistroAgendamento;
 import br.com.healthtech.imrea.agendamento.domain.UploadLog;
+import br.com.healthtech.imrea.ia.service.ScoreDeRiscoService;
 import br.com.healthtech.imrea.paciente.domain.Cuidador;
 import br.com.healthtech.imrea.paciente.domain.Paciente;
 import br.com.healthtech.imrea.paciente.service.CuidadorService;
@@ -33,6 +34,9 @@ public class AgendamentoMapper {
     @Inject
     CepService cepService;
 
+    @Inject
+    ScoreDeRiscoService scoreDeRiscoService;
+
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
@@ -45,7 +49,7 @@ public class AgendamentoMapper {
 
         Cuidador cuidador = new Cuidador(registro.getNomeAcompanhante(), registro.getNumeroAcompanhante());
         paciente.getCuidadores().add(cuidadorService.buscarOuCriarCuidador(cuidador));
-
+        paciente.setScoreDeRisco(scoreDeRiscoService.calculaScoreDeRisco(registro, paciente));
         paciente.setBairroPaciente(cepService.obterBairroPaciente(registro.getCep()));
 
         return pacienteService.buscarOuCriarPaciente(paciente);

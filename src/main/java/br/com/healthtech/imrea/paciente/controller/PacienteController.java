@@ -1,7 +1,9 @@
 package br.com.healthtech.imrea.paciente.controller;
 
+import br.com.healthtech.imrea.paciente.domain.Paciente;
 import br.com.healthtech.imrea.paciente.dto.PacienteDTO;
 import br.com.healthtech.imrea.paciente.service.PacienteService;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -12,11 +14,8 @@ import jakarta.ws.rs.core.Response;
 @Path("/api/paciente")
 public class PacienteController {
 
-    private final PacienteService pacienteService;
-
-    public PacienteController(PacienteService pacienteService) {
-        this.pacienteService = pacienteService;
-    }
+    @Inject
+    PacienteService pacienteService;
 
     @GET
     @Path("/{idPaciente}/historico")
