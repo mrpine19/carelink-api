@@ -1,9 +1,11 @@
 package br.com.healthtech.imrea.agendamento.service;
 
-import br.com.healthtech.imrea.agendamento.domain.Consulta;
+import br.com.healthtech.imrea.consulta.domain.Consulta;
 import br.com.healthtech.imrea.agendamento.domain.Profissional;
 import br.com.healthtech.imrea.agendamento.domain.RegistroAgendamento;
 import br.com.healthtech.imrea.agendamento.domain.UploadLog;
+import br.com.healthtech.imrea.consulta.service.ConsultaService;
+import br.com.healthtech.imrea.consulta.service.EspecialidadeService;
 import br.com.healthtech.imrea.ia.service.ScoreDeRiscoService;
 import br.com.healthtech.imrea.paciente.domain.Cuidador;
 import br.com.healthtech.imrea.paciente.domain.Paciente;
@@ -24,6 +26,9 @@ public class AgendamentoMapper {
 
     @Inject
     ProfissionalService profissionalService;
+
+    @Inject
+    EspecialidadeService especialidadeService;
 
     @Inject
     ConsultaService consultaService;
@@ -56,7 +61,7 @@ public class AgendamentoMapper {
     }
 
     public Profissional salvarInformacoesProfissional(RegistroAgendamento registro) {
-        Profissional profissional = new Profissional(registro.getNomeMedico(), registro.getEspecialidade());
+        Profissional profissional = new Profissional(registro.getNomeMedico());
         return profissionalService.buscarOuCriarMedico(profissional);
     }
 
@@ -72,6 +77,7 @@ public class AgendamentoMapper {
                 registro.getObsAgendamento()
         );
 
+        consulta.setEspecialidade(especialidadeService.buscarOuCriarEspecialidade(registro.getEspecialidade()));
         consulta.setUploadLog(uploadLog);
 
         return consultaService.buscarOuCriarConsulta(consulta);

@@ -1,5 +1,7 @@
-package br.com.healthtech.imrea.agendamento.domain;
+package br.com.healthtech.imrea.consulta.domain;
 
+import br.com.healthtech.imrea.agendamento.domain.Profissional;
+import br.com.healthtech.imrea.agendamento.domain.UploadLog;
 import br.com.healthtech.imrea.paciente.domain.Paciente;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
@@ -23,6 +25,10 @@ public class Consulta extends PanacheEntityBase {
     @ManyToOne
     @JoinColumn(name="id_profissional")
     private Profissional profissional;
+
+    @ManyToOne
+    @JoinColumn(name="id_especialidade")
+    private Especialidade especialidade;
 
     @ManyToOne
     @JoinColumn(name="id_upload")
@@ -83,6 +89,14 @@ public class Consulta extends PanacheEntityBase {
 
     public void setProfissional(Profissional profissional) {
         this.profissional = profissional;
+    }
+
+    public Especialidade getEspecialidade() {
+        return especialidade;
+    }
+
+    public void setEspecialidade(Especialidade especialidade) {
+        this.especialidade = especialidade;
     }
 
     public UploadLog getUploadLog() {

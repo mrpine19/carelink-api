@@ -1,6 +1,6 @@
 package br.com.healthtech.imrea.interacao.domain;
 
-import br.com.healthtech.imrea.agendamento.domain.Consulta;
+import br.com.healthtech.imrea.consulta.domain.Consulta;
 import br.com.healthtech.imrea.paciente.domain.Paciente;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;

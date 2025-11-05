@@ -1,6 +1,6 @@
 package br.com.healthtech.imrea.paciente.service;
 
-import br.com.healthtech.imrea.agendamento.service.ConsultaService;
+import br.com.healthtech.imrea.consulta.service.ConsultaService;
 import br.com.healthtech.imrea.interacao.dto.InteracaoConsultaDTO;
 import br.com.healthtech.imrea.interacao.dto.InteracaoEquipeDTO;
 import br.com.healthtech.imrea.interacao.dto.InteracaoSistemaDTO;
@@ -9,7 +9,7 @@ import br.com.healthtech.imrea.interacao.service.AnotacaoManualService;
 import br.com.healthtech.imrea.interacao.service.InteracaoAutomatizadaService;
 import br.com.healthtech.imrea.paciente.domain.Cuidador;
 import br.com.healthtech.imrea.paciente.domain.Paciente;
-import br.com.healthtech.imrea.paciente.dto.ConsultaDTO;
+import br.com.healthtech.imrea.paciente.dto.ConsultaPacienteDTO;
 import br.com.healthtech.imrea.paciente.dto.CuidadorDTO;
 import br.com.healthtech.imrea.paciente.dto.PacienteDTO;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -71,13 +71,13 @@ public class PacienteService {
         pacienteDTO.setDataNascimentoPaciente(paciente.getDataNascimentoPaciente().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
         pacienteDTO.setScoreDeRisco(paciente.getScoreDeRisco());
 
-        if (pacienteDTO.getScoreDeRisco() <= 200)
+        if (pacienteDTO.getScoreDeRisco() <= 400)
             pacienteDTO.setNivelDeRisco("BAIXO");
-        if (pacienteDTO.getScoreDeRisco() > 200 && pacienteDTO.getScoreDeRisco() <= 500)
+        if (pacienteDTO.getScoreDeRisco() > 400 && pacienteDTO.getScoreDeRisco() <= 700)
             pacienteDTO.setNivelDeRisco("MEDIO");
-        if (pacienteDTO.getScoreDeRisco() > 500 && pacienteDTO.getScoreDeRisco() <= 800)
+        if (pacienteDTO.getScoreDeRisco() > 700 && pacienteDTO.getScoreDeRisco() <= 850)
             pacienteDTO.setNivelDeRisco("ALTO");
-        if (pacienteDTO.getScoreDeRisco() > 800)
+        if (pacienteDTO.getScoreDeRisco() > 850)
             pacienteDTO.setNivelDeRisco("CRITICO");
 
         CuidadorDTO cuidadorDTO = new CuidadorDTO();
@@ -87,8 +87,8 @@ public class PacienteService {
         }
         pacienteDTO.setCuidador(cuidadorDTO);
 
-        ConsultaDTO consultaDTO = consultaService.buscaProximaConsultaPorPaciente(idPaciente);
-        pacienteDTO.setProximaConsulta(consultaDTO);
+        ConsultaPacienteDTO consultaPacienteDTO = consultaService.buscaProximaConsultaPorPaciente(idPaciente);
+        pacienteDTO.setProximaConsulta(consultaPacienteDTO);
 
         List<InteracaoConsultaDTO> historicoConsultas = consultaService.buscarHistoricoConulstasPorPaciente(idPaciente);
         List<InteracaoEquipeDTO> historicoEquipe = anotacaoManualService.buscarHistoricoEquipePorPaciente(idPaciente);

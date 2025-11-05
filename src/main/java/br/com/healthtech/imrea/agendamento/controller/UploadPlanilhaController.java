@@ -2,7 +2,7 @@ package br.com.healthtech.imrea.agendamento.controller;
 
 import br.com.healthtech.imrea.agendamento.domain.FormData;
 import br.com.healthtech.imrea.agendamento.domain.RegistroAgendamento;
-import br.com.healthtech.imrea.agendamento.service.ConsultaService;
+import br.com.healthtech.imrea.consulta.service.ConsultaService;
 import br.com.healthtech.imrea.agendamento.service.UploadPlanilhaService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;

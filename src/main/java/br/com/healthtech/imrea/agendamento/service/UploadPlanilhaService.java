@@ -3,6 +3,7 @@ package br.com.healthtech.imrea.agendamento.service;
 import br.com.healthtech.imrea.agendamento.domain.Profissional;
 import br.com.healthtech.imrea.agendamento.domain.RegistroAgendamento;
 import br.com.healthtech.imrea.agendamento.domain.UploadLog;
+import br.com.healthtech.imrea.consulta.service.EspecialidadeService;
 import br.com.healthtech.imrea.interacao.service.InteracaoAutomatizadaService;
 import br.com.healthtech.imrea.paciente.domain.Paciente;
 import br.com.healthtech.imrea.usuario.service.UsuarioService;
@@ -29,9 +30,6 @@ public class UploadPlanilhaService {
 
     @Inject
     UsuarioService usuarioService;
-
-    @Inject
-    InteracaoAutomatizadaService interacaoAutomatizadaService;
 
     @Transactional
     public List<RegistroAgendamento> processarPlanilha(FileUpload fileUpload) {

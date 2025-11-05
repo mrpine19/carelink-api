@@ -1,6 +1,6 @@
 package br.com.healthtech.imrea.alerta.domain;
 
-import br.com.healthtech.imrea.agendamento.domain.Consulta;
+import br.com.healthtech.imrea.consulta.domain.Consulta;
 import br.com.healthtech.imrea.interacao.domain.InteracaoAutomatizada;
 import br.com.healthtech.imrea.paciente.domain.Cuidador;
 import br.com.healthtech.imrea.paciente.domain.Paciente;

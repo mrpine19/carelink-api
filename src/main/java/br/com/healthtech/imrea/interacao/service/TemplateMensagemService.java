@@ -1,6 +1,6 @@
 package br.com.healthtech.imrea.interacao.service;
 
-import br.com.healthtech.imrea.agendamento.domain.Consulta;
+import br.com.healthtech.imrea.consulta.domain.Consulta;
 import br.com.healthtech.imrea.interacao.domain.TipoInteracao;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.json.Json;
@@ -31,7 +31,7 @@ public class TemplateMensagemService {
                                 "A consulta de %s com o(a) Dr(a). %s está agendada para:\n\n" +
                                 "📅 Data: *%s*\n⏰ Horário: *%s*\n\n" +
                                 "Por favor, confirme abaixo sua presença. Sua resposta nos ajuda a organizar a agenda do hospital!",
-                        nomeDestinatario, consulta.getProfissional().getEspecialidadeProfissional(), consulta.getProfissional().getNomeProfissional(),
+                        nomeDestinatario, consulta.getEspecialidade().getNomeEspecialidade(), consulta.getProfissional().getNomeProfissional(),
                         dataFormatada, horaFormatada))
                 .build();
 
@@ -77,7 +77,7 @@ public class TemplateMensagemService {
                 "1. Clique no link acima.\n" +
                 "2. Digite o Código de Acesso.\n\n" +
                 "*Precisa de ajuda imediata?* Responda AGORA a esta mensagem com a palavra 'AJUDA' para que nosso assistente possa te auxiliar.",
-                nomeDestinatario, consulta.getProfissional().getNomeProfissional(), consulta.getProfissional().getEspecialidadeProfissional(), horaFormatada,
+                nomeDestinatario, consulta.getProfissional().getNomeProfissional(), consulta.getEspecialidade().getNomeEspecialidade(), horaFormatada,
                 consulta.getLinkConsulta(), consulta.getCodigoConsulta());
 
         return Json.createObjectBuilder()

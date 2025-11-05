@@ -18,8 +18,6 @@ public class Profissional extends PanacheEntityBase {
     @Column(name="nome_profissional")
     private String nomeProfissional;
 
-    @Column(name="especialidade_profissional")
-    private String especialidadeProfissional;
 
     @Column(name="dt_criacao")
     private LocalDateTime dtCriacaoProfissional;
@@ -27,9 +25,8 @@ public class Profissional extends PanacheEntityBase {
     public Profissional() {
     }
 
-    public Profissional(String nomeProfissional, String especialidadeProfissional) {
+    public Profissional(String nomeProfissional) {
         this.nomeProfissional = nomeProfissional;
-        this.especialidadeProfissional = especialidadeProfissional;
     }
 
     public Long getIdProfissional() {
@@ -46,14 +43,6 @@ public class Profissional extends PanacheEntityBase {
 
     public void setNomeProfissional(String nomeProfissional) {
         this.nomeProfissional = nomeProfissional;
-    }
-
-    public String getEspecialidadeProfissional() {
-        return especialidadeProfissional;
-    }
-
-    public void setEspecialidadeProfissional(String especialidadeProfissional) {
-        this.especialidadeProfissional = especialidadeProfissional;
     }
 
     public LocalDateTime getDtCriacaoProfissional() {

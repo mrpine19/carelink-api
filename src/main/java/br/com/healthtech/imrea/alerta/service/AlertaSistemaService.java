@@ -1,7 +1,7 @@
 package br.com.healthtech.imrea.alerta.service;
 
-import br.com.healthtech.imrea.agendamento.domain.Consulta;
-import br.com.healthtech.imrea.agendamento.service.ConsultaService;
+import br.com.healthtech.imrea.consulta.domain.Consulta;
+import br.com.healthtech.imrea.consulta.service.ConsultaService;
 import br.com.healthtech.imrea.alerta.domain.AlertaSistema;
 import br.com.healthtech.imrea.alerta.dto.AlertaDTO;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -34,14 +34,14 @@ public class AlertaSistemaService {
             alertaDTO.setScoreDeRisco(consulta.getPaciente().getScoreDeRisco());
             alertaDTO.setIdConsulta(String.valueOf(consulta.getIdConsulta()));
             alertaDTO.setNomeMedico(consulta.getProfissional().getNomeProfissional());
-            alertaDTO.setEspecialidadeConsulta(consulta.getProfissional().getEspecialidadeProfissional());
+            alertaDTO.setEspecialidadeConsulta(consulta.getEspecialidade().getNomeEspecialidade());
             alertaDTO.setHoraConsulta(consulta.getDataAgenda().toLocalTime().toString());
 
-            if (alertaDTO.getScoreDeRisco() <= 200)
+            if (alertaDTO.getScoreDeRisco() <= 400)
                 alertaDTO.setNivelDeRisco(AlertaDTO.NivelRisco.BAIXO);
-            else if (alertaDTO.getScoreDeRisco() > 200 && alertaDTO.getScoreDeRisco() <= 500)
+            else if (alertaDTO.getScoreDeRisco() > 400 && alertaDTO.getScoreDeRisco() <= 700)
                 alertaDTO.setNivelDeRisco(AlertaDTO.NivelRisco.MEDIO);
-            else if (alertaDTO.getScoreDeRisco() > 500 && alertaDTO.getScoreDeRisco() <= 800)
+            else if (alertaDTO.getScoreDeRisco() > 700 && alertaDTO.getScoreDeRisco() <= 850)
                 alertaDTO.setNivelDeRisco(AlertaDTO.NivelRisco.ALTO);
             else
                 alertaDTO.setNivelDeRisco(AlertaDTO.NivelRisco.CRITICO);

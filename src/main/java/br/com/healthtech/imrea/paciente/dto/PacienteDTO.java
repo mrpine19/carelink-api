@@ -15,7 +15,7 @@ public class PacienteDTO {
     private float scoreDeRisco;
     private String nivelDeRisco;
     private List<String> fatoresDeRisco;
-    private ConsultaDTO proximaConsulta;
+    private ConsultaPacienteDTO proximaConsulta;
     private List<LinhaDoTempoDTO> linhaDoTempo;
 
     public Long getIdPaciente() {
@@ -90,11 +90,11 @@ public class PacienteDTO {
         this.fatoresDeRisco = fatoresDeRisco;
     }
 
-    public ConsultaDTO getProximaConsulta() {
+    public ConsultaPacienteDTO getProximaConsulta() {
         return proximaConsulta;
     }
 
-    public void setProximaConsulta(ConsultaDTO proximaConsulta) {
+    public void setProximaConsulta(ConsultaPacienteDTO proximaConsulta) {
         this.proximaConsulta = proximaConsulta;
     }
 

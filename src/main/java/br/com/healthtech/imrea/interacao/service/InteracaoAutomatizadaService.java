@@ -1,7 +1,7 @@
 package br.com.healthtech.imrea.interacao.service;
 
-import br.com.healthtech.imrea.agendamento.domain.Consulta;
-import br.com.healthtech.imrea.agendamento.service.ConsultaService;
+import br.com.healthtech.imrea.consulta.domain.Consulta;
+import br.com.healthtech.imrea.consulta.service.ConsultaService;
 import br.com.healthtech.imrea.alerta.service.ChatbotService;
 import br.com.healthtech.imrea.interacao.domain.TipoInteracao;
 import br.com.healthtech.imrea.interacao.dto.InteracaoSistemaDTO;

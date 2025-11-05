@@ -1,6 +1,6 @@
 package br.com.healthtech.imrea.paciente.dto;
 
-public class ConsultaDTO {
+public class ConsultaPacienteDTO {
     private String dataConsulta;
     private String horaConsulta;
     private String nomeMedico;

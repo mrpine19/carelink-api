@@ -1,9 +1,11 @@
-package br.com.healthtech.imrea.agendamento.service;
+package br.com.healthtech.imrea.consulta.service;
 
-import br.com.healthtech.imrea.agendamento.domain.Consulta;
+import br.com.healthtech.imrea.consulta.domain.Consulta;
+import br.com.healthtech.imrea.consulta.dto.ConsultaDTO;
 import br.com.healthtech.imrea.interacao.dto.InteracaoConsultaDTO;
-import br.com.healthtech.imrea.paciente.dto.ConsultaDTO;
+import br.com.healthtech.imrea.paciente.dto.ConsultaPacienteDTO;
 import jakarta.enterprise.context.ApplicationScoped;
+import br.com.healthtech.imrea.paciente.domain.Cuidador;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,15 +21,15 @@ public class ConsultaService {
     private static final Logger logger = LoggerFactory.getLogger(ConsultaService.class);
 
     @Transactional
-    public Consulta buscarOuCriarConsulta(Consulta consulta){
-        if(consulta.getDataAgenda() == null || consulta.getLinkConsulta() == null){
+    public Consulta buscarOuCriarConsulta(Consulta consulta) {
+        if (consulta.getDataAgenda() == null || consulta.getLinkConsulta() == null) {
             throw new IllegalArgumentException("Infomações de agendamento inválidas");
         }
 
         Consulta consultaExistente = Consulta.find("dataAgenda = ?1 and paciente = ?2 and profissional = ?3", consulta.getDataAgenda(),
                 consulta.getPaciente(), consulta.getProfissional()).firstResult();
 
-        if(consultaExistente == null){
+        if (consultaExistente == null) {
             consulta.setStatusConsulta("AGENDADO");
             consulta.setDataRegistroStatus(LocalDateTime.now());
             consulta.setDtCriacaoConsulta(LocalDateTime.now());
@@ -35,8 +37,7 @@ public class ConsultaService {
             logger.info("Agendamento marcado para paciente {}, na data {}", consulta.getPaciente().getNomePaciente(),
                     consulta.getDataAgenda());
             return consulta;
-        }
-        else {
+        } else {
             logger.info("O paciente {} já possui um agendamento para a data {}", consulta.getPaciente().getNomePaciente(),
                     consulta.getDataAgenda());
             return consultaExistente;
@@ -51,7 +52,7 @@ public class ConsultaService {
         return Consulta.find("dataAgenda >= ?1 and dataAgenda <= ?2", inicioDoDia, fimDoDia).list();
     }
 
-    public List<Consulta> buscarConsultasMarcadasHoje(){
+    public List<Consulta> buscarConsultasMarcadasHoje() {
         LocalDate hoje = LocalDate.now();
         return Consulta.find("dataAgenda >= ?1 and dataAgenda <= ?2", hoje.atStartOfDay(), hoje.atTime(LocalTime.MAX)).list();
     }
@@ -63,7 +64,7 @@ public class ConsultaService {
         return Consulta.find("dataAgenda >= ?1 and dataAgenda <= ?2", agora, proximaHora).list();
     }
 
-    public ConsultaDTO buscaProximaConsultaPorPaciente(Long idPaciente) {
+    public ConsultaPacienteDTO buscaProximaConsultaPorPaciente(Long idPaciente) {
 
         LocalDateTime inicioDoDiaDeHoje = LocalDate.now().atStartOfDay();
 
@@ -76,12 +77,12 @@ public class ConsultaService {
             return null;
         }
 
-        ConsultaDTO consultaDTO = new ConsultaDTO();
-        consultaDTO.setDataConsulta(consulta.getDataAgenda().toLocalDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
-        consultaDTO.setHoraConsulta(consulta.getDataAgenda().toLocalTime().toString());
-        consultaDTO.setNomeMedico(consulta.getProfissional() != null ? consulta.getProfissional().getNomeProfissional() : null);
-        consultaDTO.setEspecialidadeConsulta(consulta.getProfissional() != null ? consulta.getProfissional().getEspecialidadeProfissional() : null);
-        return consultaDTO;
+        ConsultaPacienteDTO consultaPacienteDTO = new ConsultaPacienteDTO();
+        consultaPacienteDTO.setDataConsulta(consulta.getDataAgenda().toLocalDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        consultaPacienteDTO.setHoraConsulta(consulta.getDataAgenda().toLocalTime().toString());
+        consultaPacienteDTO.setNomeMedico(consulta.getProfissional() != null ? consulta.getProfissional().getNomeProfissional() : null);
+        consultaPacienteDTO.setEspecialidadeConsulta(consulta.getProfissional() != null ? consulta.getEspecialidade().getNomeEspecialidade() : null);
+        return consultaPacienteDTO;
     }
 
     public List<InteracaoConsultaDTO> buscarHistoricoConulstasPorPaciente(Long idPaciente) {
@@ -96,9 +97,41 @@ public class ConsultaService {
             consultaDTO.setStatus(consulta.getStatusConsulta());
             consultaDTO.setModalidade("Telemedicina");
             consultaDTO.setProfissional(consulta.getProfissional().getNomeProfissional());
-            consultaDTO.setEspecialidade(consulta.getProfissional().getEspecialidadeProfissional());
+            consultaDTO.setEspecialidade(consulta.getEspecialidade().getNomeEspecialidade());
             historico.add(consultaDTO);
         }
         return historico;
+    }
+
+    public List<ConsultaDTO> buscarConsultasPorPeriodo(String dataInicio, String dataFim) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        LocalDateTime inicio = LocalDate.parse(dataInicio, formatter).atStartOfDay();
+        LocalDateTime fim = LocalDate.parse(dataFim, formatter).minusDays(1).atTime(LocalTime.MAX);
+
+        List<Consulta> consultas = Consulta.find("dataAgenda >= ?1 and dataAgenda <= ?2 order by dataAgenda", inicio, fim).list();
+        List<ConsultaDTO> dtos = new ArrayList<>();
+
+        for (Consulta consulta : consultas) {
+            ConsultaDTO consultaDTO = new ConsultaDTO();
+            consultaDTO.setDataConsulta(consulta.getDataAgenda().toLocalDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            consultaDTO.setHoraConsulta(consulta.getDataAgenda().toLocalTime().toString());
+            consultaDTO.setNomePaciente(consulta.getPaciente().getNomePaciente());
+            consultaDTO.setTelefonePaciente(consulta.getPaciente().getTelefonePaciente());
+
+            if (!consulta.getPaciente().getCuidadores().isEmpty()) {
+                Cuidador primeiroCuidador = consulta.getPaciente().getCuidadores().iterator().next();
+                consultaDTO.setNomeCuidador(primeiroCuidador.getNomeCuidador());
+                consultaDTO.setTelefoneCuidador(primeiroCuidador.getTelefoneCuidador());
+            }
+
+            consultaDTO.setNomeProfissional(consulta.getProfissional().getNomeProfissional());
+            consultaDTO.setEspecialidadeProfissional(consulta.getEspecialidade().getNomeEspecialidade());
+            consultaDTO.setLinkConsulta(consulta.getLinkConsulta());
+            consultaDTO.setCodigoConsulta(consulta.getCodigoConsulta());
+            consultaDTO.setAnotacoes(consulta.getObsConsulta());
+            dtos.add(consultaDTO);
+        }
+        return dtos;
     }
 }
