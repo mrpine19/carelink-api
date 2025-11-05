@@ -10,6 +10,7 @@ public class ConsultaDTO {
     private String telefoneCuidador;
     private String nomeProfissional;
     private String especialidadeProfissional;
+    private String statusConsulta;
     private String linkConsulta;
     private String codigoConsulta;
     private String anotacoes;
@@ -76,6 +77,14 @@ public class ConsultaDTO {
 
     public void setEspecialidadeProfissional(String especialidadeProfissional) {
         this.especialidadeProfissional = especialidadeProfissional;
+    }
+
+    public String getStatusConsulta() {
+        return statusConsulta;
+    }
+
+    public void setStatusConsulta(String statusConsulta) {
+        this.statusConsulta = statusConsulta;
     }
 
     public String getLinkConsulta() {
