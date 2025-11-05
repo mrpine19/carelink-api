@@ -127,6 +127,7 @@ public class ConsultaService {
 
             consultaDTO.setNomeProfissional(consulta.getProfissional().getNomeProfissional());
             consultaDTO.setEspecialidadeProfissional(consulta.getEspecialidade().getNomeEspecialidade());
+            consultaDTO.setStatusConsulta(consulta.getStatusConsulta());
             consultaDTO.setLinkConsulta(consulta.getLinkConsulta());
             consultaDTO.setCodigoConsulta(consulta.getCodigoConsulta());
             consultaDTO.setAnotacoes(consulta.getObsConsulta());
