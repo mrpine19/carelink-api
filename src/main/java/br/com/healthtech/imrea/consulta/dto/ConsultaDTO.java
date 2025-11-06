@@ -2,6 +2,7 @@ package br.com.healthtech.imrea.consulta.dto;
 
 public class ConsultaDTO {
 
+    private int idConsulta;
     private String dataConsulta;
     private String horaConsulta;
     private String nomePaciente;
@@ -14,6 +15,14 @@ public class ConsultaDTO {
     private String linkConsulta;
     private String codigoConsulta;
     private String anotacoes;
+
+    public int getIdConsulta() {
+        return idConsulta;
+    }
+
+    public void setIdConsulta(int idConsulta) {
+        this.idConsulta = idConsulta;
+    }
 
     public String getDataConsulta() {
         return dataConsulta;

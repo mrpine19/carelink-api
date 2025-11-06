@@ -1,12 +1,11 @@
 package br.com.healthtech.imrea.consulta.controller;
 
+import br.com.healthtech.imrea.consulta.domain.Consulta;
 import br.com.healthtech.imrea.consulta.dto.ConsultaDTO;
+import br.com.healthtech.imrea.consulta.dto.ConsultaUpdateDTO;
 import br.com.healthtech.imrea.consulta.service.ConsultaService;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
@@ -23,6 +22,14 @@ public class ConsultaController {
     public Response buscarConsultasPorPeriodo(@QueryParam("dataInicio") String dataInicio, @QueryParam("dataFim") String dataFim){
         List<ConsultaDTO> consultaDTO = consultaService.buscarConsultasPorPeriodo(dataInicio, dataFim);
         return Response.ok(consultaDTO).build();
+    }
+
+    @PUT
+    @Path("/{idConsulta}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response atualizarConsulta(@PathParam("idConsulta") Long idConsulta, ConsultaUpdateDTO consultaUpdateDTO){
+        consultaService.atualizarConsulta(idConsulta, consultaUpdateDTO);
+        return Response.ok(consultaUpdateDTO).build();
     }
 
     /*

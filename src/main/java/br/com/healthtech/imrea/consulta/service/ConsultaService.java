@@ -2,6 +2,7 @@ package br.com.healthtech.imrea.consulta.service;
 
 import br.com.healthtech.imrea.consulta.domain.Consulta;
 import br.com.healthtech.imrea.consulta.dto.ConsultaDTO;
+import br.com.healthtech.imrea.consulta.dto.ConsultaUpdateDTO;
 import br.com.healthtech.imrea.interacao.dto.InteracaoConsultaDTO;
 import br.com.healthtech.imrea.paciente.dto.ConsultaPacienteDTO;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -19,6 +20,8 @@ import java.util.List;
 public class ConsultaService {
 
     private static final Logger logger = LoggerFactory.getLogger(ConsultaService.class);
+
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     @Transactional
     public Consulta buscarOuCriarConsulta(Consulta consulta) {
@@ -114,6 +117,7 @@ public class ConsultaService {
 
         for (Consulta consulta : consultas) {
             ConsultaDTO consultaDTO = new ConsultaDTO();
+            consultaDTO.setIdConsulta(consulta.getIdConsulta().intValue());
             consultaDTO.setDataConsulta(consulta.getDataAgenda().toLocalDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
             consultaDTO.setHoraConsulta(consulta.getDataAgenda().toLocalTime().toString());
             consultaDTO.setNomePaciente(consulta.getPaciente().getNomePaciente());
@@ -134,5 +138,26 @@ public class ConsultaService {
             dtos.add(consultaDTO);
         }
         return dtos;
+    }
+
+    @Transactional
+    public void atualizarConsulta(Long idConsulta, ConsultaUpdateDTO consultaUpdateDTO) {
+        Consulta consulta = Consulta.findById(idConsulta);
+
+        if (consulta == null)
+            throw new IllegalArgumentException("Consulta com id " + idConsulta + "não encontrada");
+
+        String dataFormatada = converteFormatoDeData(consultaUpdateDTO.getDate());
+        LocalDateTime dataAgenda = LocalDateTime.parse(dataFormatada + " " + consultaUpdateDTO.getTime(), DATE_TIME_FORMATTER);
+
+        consulta.setDataAgenda(dataAgenda);
+        consulta.setStatusConsulta(consultaUpdateDTO.getStatus());
+    }
+
+    public String converteFormatoDeData(String data){
+        DateTimeFormatter formatoEntrada = DateTimeFormatter.ISO_LOCAL_DATE;
+        DateTimeFormatter formatoSaida = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        LocalDate dataConvertida = LocalDate.parse(data, formatoEntrada);
+        return dataConvertida.format(formatoSaida);
     }
 }
