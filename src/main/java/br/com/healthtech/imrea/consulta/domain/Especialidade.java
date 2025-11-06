@@ -1,6 +1,5 @@
 package br.com.healthtech.imrea.consulta.domain;
 
-import br.com.healthtech.imrea.paciente.domain.Paciente;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 
@@ -17,6 +16,9 @@ public class Especialidade extends PanacheEntityBase {
     @Column(name = "nome_especialidade")
     private String nomeEspecialidade;
 
+    @Column(name="link_consulta_especialidade")
+    private String linkConsultaEspecialidade;
+
     public Long getIdEspecialidade() {
         return idEspecialidade;
     }
@@ -31,5 +33,13 @@ public class Especialidade extends PanacheEntityBase {
 
     public void setNomeEspecialidade(String nomeEspecialidade) {
         this.nomeEspecialidade = nomeEspecialidade;
+    }
+
+    public String getLinkConsultaEspecialidade() {
+        return linkConsultaEspecialidade;
+    }
+
+    public void setLinkConsultaEspecialidade(String linkConsultaEspecialidade) {
+        this.linkConsultaEspecialidade = linkConsultaEspecialidade;
     }
 }

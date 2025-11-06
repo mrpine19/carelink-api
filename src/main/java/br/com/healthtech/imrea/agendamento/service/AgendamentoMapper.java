@@ -6,7 +6,6 @@ import br.com.healthtech.imrea.agendamento.domain.RegistroAgendamento;
 import br.com.healthtech.imrea.agendamento.domain.UploadLog;
 import br.com.healthtech.imrea.consulta.service.ConsultaService;
 import br.com.healthtech.imrea.consulta.service.EspecialidadeService;
-import br.com.healthtech.imrea.ia.service.ScoreDeRiscoService;
 import br.com.healthtech.imrea.paciente.domain.Cuidador;
 import br.com.healthtech.imrea.paciente.domain.Paciente;
 import br.com.healthtech.imrea.paciente.service.CuidadorService;
@@ -39,8 +38,6 @@ public class AgendamentoMapper {
     @Inject
     CepService cepService;
 
-    @Inject
-    ScoreDeRiscoService scoreDeRiscoService;
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
@@ -54,7 +51,6 @@ public class AgendamentoMapper {
 
         Cuidador cuidador = new Cuidador(registro.getNomeAcompanhante(), registro.getNumeroAcompanhante());
         paciente.getCuidadores().add(cuidadorService.buscarOuCriarCuidador(cuidador));
-        paciente.setScoreDeRisco(scoreDeRiscoService.calculaScoreDeRisco(registro, paciente));
         paciente.setBairroPaciente(cepService.obterBairroPaciente(registro.getCep()));
 
         return pacienteService.buscarOuCriarPaciente(paciente);
@@ -65,14 +61,13 @@ public class AgendamentoMapper {
         return profissionalService.buscarOuCriarMedico(profissional);
     }
 
-    public Consulta salvarInformacoesConsulta(RegistroAgendamento registro, Paciente paciente, Profissional profissional, UploadLog uploadLog){
+    public void salvarInformacoesConsulta(RegistroAgendamento registro, Paciente paciente, Profissional profissional, UploadLog uploadLog){
         LocalDateTime dataAgenda = LocalDateTime.parse(registro.getDataAgendamento() + " " + registro.getHoraAgendamento(), DATE_TIME_FORMATTER);
 
         Consulta consulta = new Consulta(
                 paciente,
                 profissional,
                 dataAgenda,
-                registro.getLinkConsulta(),
                 registro.getCodigoConsulta(),
                 registro.getObsAgendamento()
         );
@@ -80,6 +75,6 @@ public class AgendamentoMapper {
         consulta.setEspecialidade(especialidadeService.buscarOuCriarEspecialidade(registro.getEspecialidade()));
         consulta.setUploadLog(uploadLog);
 
-        return consultaService.buscarOuCriarConsulta(consulta);
+        consultaService.buscarOuCriarConsulta(consulta);
     }
 }

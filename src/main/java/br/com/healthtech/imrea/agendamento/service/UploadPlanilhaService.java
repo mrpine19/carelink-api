@@ -3,8 +3,7 @@ package br.com.healthtech.imrea.agendamento.service;
 import br.com.healthtech.imrea.agendamento.domain.Profissional;
 import br.com.healthtech.imrea.agendamento.domain.RegistroAgendamento;
 import br.com.healthtech.imrea.agendamento.domain.UploadLog;
-import br.com.healthtech.imrea.consulta.service.EspecialidadeService;
-import br.com.healthtech.imrea.interacao.service.InteracaoAutomatizadaService;
+import br.com.healthtech.imrea.ia.service.ScoreDeRiscoService;
 import br.com.healthtech.imrea.paciente.domain.Paciente;
 import br.com.healthtech.imrea.usuario.service.UsuarioService;
 import com.alibaba.excel.EasyExcel;
@@ -30,6 +29,9 @@ public class UploadPlanilhaService {
 
     @Inject
     UsuarioService usuarioService;
+
+    @Inject
+    ScoreDeRiscoService scoreDeRiscoService;
 
     @Transactional
     public List<RegistroAgendamento> processarPlanilha(FileUpload fileUpload) {
@@ -105,6 +107,8 @@ public class UploadPlanilhaService {
     @Transactional
     public void processarUmRegistroComTransacao(RegistroAgendamento registro, UploadLog uploadLog) {
         Paciente paciente = agendamentoMapper.salvarInformacoesPaciente(registro);
+        paciente.setScoreDeRisco(scoreDeRiscoService.calculaScoreDeRisco(paciente, registro.getEspecialidade()));
+
         Profissional profissional = agendamentoMapper.salvarInformacoesProfissional(registro);
         agendamentoMapper.salvarInformacoesConsulta(registro, paciente, profissional, uploadLog);
     }

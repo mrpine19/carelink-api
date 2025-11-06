@@ -33,8 +33,17 @@ public class Paciente extends PanacheEntityBase {
     @Column(name="data_nascimento_paciente")
     private LocalDate dataNascimentoPaciente;
 
+    @Column(name="afinidade_digital")
+    private int afinidadeDigital;
+
     @Column(name="score_risco_absenteismo")
     private float scoreDeRisco;
+
+    @Column(name="numero_faltas_consecutivas")
+    private int numeroFaltasConsecutivas;
+
+    @Column(name="data_primeira_consulta")
+    LocalDate dataPrimeiraConsulta;
 
     @Column(name="bairro_paciente")
     private String bairroPaciente;
@@ -91,12 +100,36 @@ public class Paciente extends PanacheEntityBase {
         this.dataNascimentoPaciente = dataNascimentoPaciente;
     }
 
+    public int getAfinidadeDigital() {
+        return afinidadeDigital;
+    }
+
+    public void setAfinidadeDigital(int afinidadeDigital) {
+        this.afinidadeDigital = afinidadeDigital;
+    }
+
     public float getScoreDeRisco() {
         return scoreDeRisco;
     }
 
     public void setScoreDeRisco(float scoreDeRisco) {
         this.scoreDeRisco = scoreDeRisco;
+    }
+
+    public int getNumeroFaltasConsecutivas() {
+        return numeroFaltasConsecutivas;
+    }
+
+    public void setNumeroFaltasConsecutivas(int numeroFaltasConsecutivas) {
+        this.numeroFaltasConsecutivas = numeroFaltasConsecutivas;
+    }
+
+    public LocalDate getDataPrimeiraConsulta() {
+        return dataPrimeiraConsulta;
+    }
+
+    public void setDataPrimeiraConsulta(LocalDate dataPrimeiraConsulta) {
+        this.dataPrimeiraConsulta = dataPrimeiraConsulta;
     }
 
     public String getBairroPaciente() {

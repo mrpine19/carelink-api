@@ -31,9 +31,6 @@ public class RegistroAgendamento {
     @ExcelProperty("Hora Agenda")
     private String horaAgendamento;
 
-    @ExcelProperty("Link")
-    private String linkConsulta;
-
     @ExcelProperty("Código")
     private String codigoConsulta;
 
@@ -53,7 +50,6 @@ public class RegistroAgendamento {
         this.numeroAcompanhante = this.numeroAcompanhante == null ? "" : this.numeroAcompanhante;
         this.especialidade = this.especialidade == null ? "" : this.especialidade;
         this.horaAgendamento = this.horaAgendamento == null ? "" : this.horaAgendamento;
-        this.linkConsulta = this.linkConsulta == null ? "" : this.linkConsulta;
         this.codigoConsulta = this.codigoConsulta == null ? "" : this.codigoConsulta;
         this.obsAgendamento = this.obsAgendamento == null ? "" : this.obsAgendamento;
         this.cep = this.cep == null ? "" : this.cep;
@@ -129,14 +125,6 @@ public class RegistroAgendamento {
 
     public void setHoraAgendamento(String horaAgendamento) {
         this.horaAgendamento = horaAgendamento;
-    }
-
-    public String getLinkConsulta() {
-        return linkConsulta;
-    }
-
-    public void setLinkConsulta(String linkConsulta) {
-        this.linkConsulta = linkConsulta;
     }
 
     public String getCodigoConsulta() {

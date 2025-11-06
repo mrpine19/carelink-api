@@ -4,9 +4,12 @@ import br.com.healthtech.imrea.consulta.domain.Consulta;
 import br.com.healthtech.imrea.consulta.dto.ConsultaDTO;
 import br.com.healthtech.imrea.consulta.dto.ConsultaUpdateDTO;
 import br.com.healthtech.imrea.interacao.dto.InteracaoConsultaDTO;
+import br.com.healthtech.imrea.paciente.domain.Paciente;
 import br.com.healthtech.imrea.paciente.dto.ConsultaPacienteDTO;
+import br.com.healthtech.imrea.paciente.service.PacienteService;
 import jakarta.enterprise.context.ApplicationScoped;
 import br.com.healthtech.imrea.paciente.domain.Cuidador;
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,21 +22,23 @@ import java.util.List;
 @ApplicationScoped
 public class ConsultaService {
 
+    @Inject
+    PacienteService pacienteService;
+
     private static final Logger logger = LoggerFactory.getLogger(ConsultaService.class);
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     @Transactional
     public Consulta buscarOuCriarConsulta(Consulta consulta) {
-        if (consulta.getDataAgenda() == null || consulta.getLinkConsulta() == null) {
+        if (consulta.getDataAgenda() == null)
             throw new IllegalArgumentException("Infomações de agendamento inválidas");
-        }
 
         Consulta consultaExistente = Consulta.find("dataAgenda = ?1 and paciente = ?2 and profissional = ?3", consulta.getDataAgenda(),
                 consulta.getPaciente(), consulta.getProfissional()).firstResult();
 
         if (consultaExistente == null) {
-            consulta.setStatusConsulta("AGENDADO");
+            consulta.setStatusConsulta("AGENDADA");
             consulta.setDataRegistroStatus(LocalDateTime.now());
             consulta.setDtCriacaoConsulta(LocalDateTime.now());
             consulta.persist();
@@ -88,8 +93,20 @@ public class ConsultaService {
         return consultaPacienteDTO;
     }
 
+    public List<Consulta> buscarConsultasPorPaciente(Long idPaciente) {
+        return Consulta.find("paciente.idPaciente = ?1 order by dataAgenda desc", idPaciente).list();
+    }
+
+    public Consulta buscarConsultaMaisRecenteRealizada(Long idPaciente) {
+        return Consulta.find("paciente.idPaciente = ?1 AND statusConsulta = 'REALIZADA' order by dataAgenda desc", idPaciente).firstResult();
+    }
+
+    public List<Consulta> buscarConsultasPassadasParaTaxa(Long idPaciente) {
+        return Consulta.find("paciente.idPaciente = ?1 AND NOT statusConsulta = 'CANCELADA' order by dataAgenda desc", idPaciente).list();
+    }
+
     public List<InteracaoConsultaDTO> buscarHistoricoConulstasPorPaciente(Long idPaciente) {
-        List<Consulta> consultas = Consulta.find("paciente.idPaciente = ?1 order by dataAgenda desc", idPaciente).list();
+        List<Consulta> consultas = buscarConsultasPorPaciente(idPaciente);
         List<InteracaoConsultaDTO> historico = new ArrayList<>();
 
         for (Consulta consulta : consultas) {
@@ -132,7 +149,7 @@ public class ConsultaService {
             consultaDTO.setNomeProfissional(consulta.getProfissional().getNomeProfissional());
             consultaDTO.setEspecialidadeProfissional(consulta.getEspecialidade().getNomeEspecialidade());
             consultaDTO.setStatusConsulta(consulta.getStatusConsulta());
-            consultaDTO.setLinkConsulta(consulta.getLinkConsulta());
+            consultaDTO.setLinkConsulta(consulta.getEspecialidade().getLinkConsultaEspecialidade());
             consultaDTO.setCodigoConsulta(consulta.getCodigoConsulta());
             consultaDTO.setAnotacoes(consulta.getObsConsulta());
             dtos.add(consultaDTO);
@@ -152,6 +169,10 @@ public class ConsultaService {
 
         consulta.setDataAgenda(dataAgenda);
         consulta.setStatusConsulta(consultaUpdateDTO.getStatus());
+
+        if (consulta.getPaciente().getDataPrimeiraConsulta() == null)
+            consulta.getPaciente().setDataPrimeiraConsulta(LocalDate.now());
+        populaHistoricoDeFaltas(consulta.getPaciente(), consultaUpdateDTO.getStatus());
     }
 
     public String converteFormatoDeData(String data){
@@ -159,5 +180,14 @@ public class ConsultaService {
         DateTimeFormatter formatoSaida = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         LocalDate dataConvertida = LocalDate.parse(data, formatoEntrada);
         return dataConvertida.format(formatoSaida);
+    }
+
+    public void populaHistoricoDeFaltas(Paciente paciente, String statusConsulta){
+        if (statusConsulta.equals("REALIZADA"))
+            paciente.setNumeroFaltasConsecutivas(0);
+        else if(statusConsulta.equals("PACIENTE NAO COMPARECEU")){
+            int faltas = paciente.getNumeroFaltasConsecutivas();
+            paciente.setNumeroFaltasConsecutivas(faltas + 1);
+        }
     }
 }

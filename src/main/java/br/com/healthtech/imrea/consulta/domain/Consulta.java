@@ -37,9 +37,6 @@ public class Consulta extends PanacheEntityBase {
     @Column(name="data_agenda")
     private LocalDateTime dataAgenda;
 
-    @Column(name="link_acesso")
-    private String linkConsulta;
-
     @Column(name="codigo_acesso")
     private String codigoConsulta;
 
@@ -58,11 +55,10 @@ public class Consulta extends PanacheEntityBase {
     public Consulta() {
     }
 
-    public Consulta(Paciente paciente, Profissional profissional, LocalDateTime dataAgenda, String linkConsulta, String codigoConsulta, String obsConsulta) {
+    public Consulta(Paciente paciente, Profissional profissional, LocalDateTime dataAgenda, String codigoConsulta, String obsConsulta) {
         this.paciente = paciente;
         this.profissional = profissional;
         this.dataAgenda = dataAgenda;
-        this.linkConsulta = linkConsulta;
         this.codigoConsulta = codigoConsulta;
         this.obsConsulta = obsConsulta;
     }
@@ -113,14 +109,6 @@ public class Consulta extends PanacheEntityBase {
 
     public void setDataAgenda(LocalDateTime dataAgenda) {
         this.dataAgenda = dataAgenda;
-    }
-
-    public String getLinkConsulta() {
-        return linkConsulta;
-    }
-
-    public void setLinkConsulta(String linkConsulta) {
-        this.linkConsulta = linkConsulta;
     }
 
     public String getCodigoConsulta() {

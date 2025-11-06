@@ -78,7 +78,7 @@ public class TemplateMensagemService {
                 "2. Digite o Código de Acesso.\n\n" +
                 "*Precisa de ajuda imediata?* Responda AGORA a esta mensagem com a palavra 'AJUDA' para que nosso assistente possa te auxiliar.",
                 nomeDestinatario, consulta.getProfissional().getNomeProfissional(), consulta.getEspecialidade().getNomeEspecialidade(), horaFormatada,
-                consulta.getLinkConsulta(), consulta.getCodigoConsulta());
+                consulta.getEspecialidade().getLinkConsultaEspecialidade(), consulta.getCodigoConsulta());
 
         return Json.createObjectBuilder()
                 .add("body", body)
