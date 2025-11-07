@@ -54,10 +54,11 @@ public class Paciente extends PanacheEntityBase {
     public Paciente() {
     }
 
-    public Paciente(String nomePaciente, String telefonePaciente, LocalDate dataNascimentoPaciente) {
+    public Paciente(String nomePaciente, String telefonePaciente, LocalDate dataNascimentoPaciente, int afinidadeDigital) {
         this.nomePaciente = nomePaciente;
         this.telefonePaciente = telefonePaciente;
         this.dataNascimentoPaciente = dataNascimentoPaciente;
+        this.afinidadeDigital = afinidadeDigital;
     }
 
     public Long getIdPaciente() {

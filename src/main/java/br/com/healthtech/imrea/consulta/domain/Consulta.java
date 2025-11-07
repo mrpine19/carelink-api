@@ -49,6 +49,13 @@ public class Consulta extends PanacheEntityBase {
     @Column(name="data_registro_status")
     private LocalDateTime dataRegistroStatus;
 
+    @Column(name="paciente_confirmou_presenca")
+    private String pacienteConfirmouPresenca;
+
+    @Column(name="paciente_precisa_remarcar")
+    private String pacientePrecisaReagendar;
+
+
     @Column(name="dt_criacao")
     private LocalDateTime dtCriacaoConsulta;
 
@@ -141,6 +148,22 @@ public class Consulta extends PanacheEntityBase {
 
     public void setDataRegistroStatus(LocalDateTime dataRegistroStatus) {
         this.dataRegistroStatus = dataRegistroStatus;
+    }
+
+    public String getPacienteConfirmouPresenca() {
+        return pacienteConfirmouPresenca;
+    }
+
+    public void setPacienteConfirmouPresenca(String pacienteConfirmouPresenca) {
+        this.pacienteConfirmouPresenca = pacienteConfirmouPresenca;
+    }
+
+    public String getPacientePrecisaReagendar() {
+        return pacientePrecisaReagendar;
+    }
+
+    public void setPacientePrecisaReagendar(String pacientePrecisaReagendar) {
+        this.pacientePrecisaReagendar = pacientePrecisaReagendar;
     }
 
     public LocalDateTime getDtCriacaoConsulta() {

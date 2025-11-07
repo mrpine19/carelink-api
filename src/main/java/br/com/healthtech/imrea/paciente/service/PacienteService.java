@@ -103,4 +103,8 @@ public class PacienteService {
         pacienteDTO.setLinhaDoTempo(linhaDoTempoDTO);
         return pacienteDTO;
     }
+
+    public Paciente buscarPacientePorTelefone(String telefonePaciente) {
+        return Paciente.find("telefonePaciente = ?1", telefonePaciente).firstResult();
+    }
 }

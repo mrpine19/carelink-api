@@ -169,9 +169,11 @@ public class ConsultaService {
 
         consulta.setDataAgenda(dataAgenda);
         consulta.setStatusConsulta(consultaUpdateDTO.getStatus());
+        consulta.setPacienteConfirmouPresenca("N");
+        atualizarStatusPrecisaReagendar(consulta);
 
         if (consulta.getPaciente().getDataPrimeiraConsulta() == null)
-            consulta.getPaciente().setDataPrimeiraConsulta(LocalDate.now());
+            consulta.getPaciente().setDataPrimeiraConsulta(consulta.getDataAgenda().toLocalDate());
         populaHistoricoDeFaltas(consulta.getPaciente(), consultaUpdateDTO.getStatus());
     }
 
@@ -189,5 +191,60 @@ public class ConsultaService {
             int faltas = paciente.getNumeroFaltasConsecutivas();
             paciente.setNumeroFaltasConsecutivas(faltas + 1);
         }
+    }
+
+    private void atualizarStatusPrecisaReagendar(Consulta consulta) {
+        Consulta.update("pacientePrecisaReagendar = 'N' where paciente = ?1", consulta.getPaciente());
+    }
+
+    @Transactional
+    public void confirmarPresenca(String telefonePaciente) {
+        Paciente paciente = pacienteService.buscarPacientePorTelefone(telefonePaciente);
+        if (paciente == null) {
+            logger.warn("Paciente com telefone {} não encontrado para confirmação de presença.", telefonePaciente);
+            return;
+        }
+
+        LocalDateTime inicioDoDia = LocalDate.now().atStartOfDay();
+        LocalDateTime fimDoProximoDia = LocalDate.now().atTime(LocalTime.MAX).plusDays(1);
+
+        Consulta consulta = Consulta.find("paciente.idPaciente = ?1 and dataAgenda >= ?2 and dataAgenda <= ?3",
+                paciente.getIdPaciente(), inicioDoDia, fimDoProximoDia).firstResult();
+
+        if (consulta == null) {
+            logger.warn("Nenhuma consulta encontrada para o paciente {} na data de hoje para confirmação de presença.", paciente.getNomePaciente());
+            return;
+        }
+
+        consulta.setPacienteConfirmouPresenca("S");
+        paciente.setScoreDeRisco(paciente.getScoreDeRisco() - 200);
+        logger.info("Presença confirmada para o paciente {} na consulta marcada para {}.", paciente.getNomePaciente(), consulta.getDataAgenda());
+    }
+
+    @Transactional
+    public void pacientePrecisaReagendar(String telefonePaciente) {
+        Paciente paciente = pacienteService.buscarPacientePorTelefone(telefonePaciente);
+
+        if (paciente == null) {
+            logger.warn("Paciente com telefone {} não encontrado para remarcar consulta.", telefonePaciente);
+            return;
+        }
+
+        LocalDateTime inicioDoDia = LocalDate.now().atStartOfDay();
+        LocalDateTime fimDoProximoDia = LocalDate.now().atTime(LocalTime.MAX).plusDays(1);
+
+        Consulta consulta = Consulta.find("paciente.idPaciente = ?1 and dataAgenda >= ?2 and dataAgenda <= ?3",
+                paciente.getIdPaciente(), inicioDoDia, fimDoProximoDia).firstResult();
+
+        if (consulta == null) {
+            logger.warn("Nenhuma consulta encontrada para o paciente {} na data de hoje para remarcar a consulta.", paciente.getNomePaciente());
+            return;
+        }
+
+        consulta.setPacientePrecisaReagendar("S");
+    }
+
+    public List<Consulta> buscarConsultasParaReagendar() {
+        return Consulta.find("pacientePrecisaReagendar = 'S'").list();
     }
 }

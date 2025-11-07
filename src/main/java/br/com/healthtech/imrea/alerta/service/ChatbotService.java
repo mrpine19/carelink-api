@@ -39,7 +39,7 @@ public class ChatbotService {
     public void enviarMensagem(JsonObject payload, TipoInteracao tipo) {
         if (tipo == TipoInteracao.LEMBRETE_24H)
             enviarMensagemInterativa(payload);
-        else if (tipo == TipoInteracao.LEMBRETE_1H)
+        else if (tipo == TipoInteracao.LEMBRETE_1H || tipo == TipoInteracao.CONFIRMAR_CONSULTA || tipo == TipoInteracao.REAGENDAR_CONSULTA)
             enviarMensagemSimples(payload);
     }
 

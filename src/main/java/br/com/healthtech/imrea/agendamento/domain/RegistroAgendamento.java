@@ -19,6 +19,9 @@ public class RegistroAgendamento {
     @ExcelProperty("Data nascimento")
     private String dataNascimentoPaciente;
 
+    @ExcelProperty("Afinidade Digital")
+    private int afinidadeDigital;
+
     @ExcelProperty("Nome acompanhante")
     private String nomeAcompanhante;
 
@@ -69,6 +72,14 @@ public class RegistroAgendamento {
 
     public void setDataAgendamento(String dataAgendamento) {
         this.dataAgendamento = dataAgendamento;
+    }
+
+    public int getAfinidadeDigital() {
+        return afinidadeDigital;
+    }
+
+    public void setAfinidadeDigital(int afinidadeDigital) {
+        this.afinidadeDigital = afinidadeDigital;
     }
 
     public String getNomePaciente() {

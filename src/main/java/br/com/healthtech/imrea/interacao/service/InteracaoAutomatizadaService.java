@@ -38,7 +38,7 @@ public class InteracaoAutomatizadaService {
     ChatbotService chatbotService;
 
     @Transactional
-    @Scheduled(cron = "0 0 9 * * ?") // Executa todo dia às 9h
+    //@Scheduled(cron = "0 0 9 * * ?") // Executa todo dia às 9h
     public void enviarLembrete24HorasConsulta() {
         List<Consulta> consultasDeAmanha = consultaService.buscarConsultasMarcadasDiaSeguinte();
         if (!consultasDeAmanha.isEmpty()){
@@ -48,7 +48,7 @@ public class InteracaoAutomatizadaService {
     }
 
     @Transactional
-    @Scheduled(cron = "0 0 6-18 * * ?") // Executa a cada hora entre 6h e 18h
+    //@Scheduled(cron = "0 0 6-18 * * ?") // Executa a cada hora entre 6h e 18h
     public void enviarLembrete1HoraConsulta() {
         List<Consulta> consultasDeAgora = consultaService.buscarConsultasMarcadasProximaHora();
         if (!consultasDeAgora.isEmpty()){

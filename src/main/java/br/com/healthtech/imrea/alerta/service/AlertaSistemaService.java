@@ -20,22 +20,10 @@ public class AlertaSistemaService {
     public List<AlertaDTO> obterAlertasHoje() {
         List<Consulta> consultasDeHoje = consultaService.buscarConsultasMarcadasHoje();
 
-        if(consultasDeHoje.isEmpty())
-            throw new IllegalArgumentException("Não há consultas marcadas hoje");
-
         List<AlertaDTO> alertas = new ArrayList<>();
 
         for (Consulta consulta : consultasDeHoje){
-            AlertaDTO alertaDTO = new AlertaDTO();
-            alertaDTO.setIdPaciente(String.valueOf(consulta.getPaciente().getIdPaciente()));
-
-            alertaDTO.setNomePaciente(consulta.getPaciente().getNomePaciente());
-            alertaDTO.setTelefonePaciente(consulta.getPaciente().getTelefonePaciente());
-            alertaDTO.setScoreDeRisco(consulta.getPaciente().getScoreDeRisco());
-            alertaDTO.setIdConsulta(String.valueOf(consulta.getIdConsulta()));
-            alertaDTO.setNomeMedico(consulta.getProfissional().getNomeProfissional());
-            alertaDTO.setEspecialidadeConsulta(consulta.getEspecialidade().getNomeEspecialidade());
-            alertaDTO.setHoraConsulta(consulta.getDataAgenda().toLocalTime().toString());
+            AlertaDTO alertaDTO = popularAlertaDTO(consulta);
 
             if (alertaDTO.getScoreDeRisco() <= 400)
                 alertaDTO.setNivelDeRisco(AlertaDTO.NivelRisco.BAIXO);
@@ -46,11 +34,44 @@ public class AlertaSistemaService {
             else
                 alertaDTO.setNivelDeRisco(AlertaDTO.NivelRisco.CRITICO);
 
-            buscarUltimoAlertaServiceAtivo(alertaDTO);
             alertas.add(alertaDTO);
         }
         orderarListaDeAlertas(alertas);
-        return alertas;
+
+        List<Consulta> consultasParaReagendar = consultaService.buscarConsultasParaReagendar();
+
+        List<AlertaDTO> alertasOrdenados = new ArrayList<>();
+        if (consultasParaReagendar != null && !consultasParaReagendar.isEmpty()){
+            for (Consulta consulta : consultasParaReagendar){
+                AlertaDTO alertaDTO = popularAlertaDTO(consulta);
+
+                alertaDTO.setScoreDeRisco(1000);
+                alertaDTO.setNivelDeRisco(AlertaDTO.NivelRisco.CRITICO);
+                alertasOrdenados.add(alertaDTO);
+            }
+        }
+        alertasOrdenados.addAll(alertas);
+
+        if(alertasOrdenados.isEmpty())
+            throw new IllegalArgumentException("Não há consultas marcadas hoje");
+
+        return alertasOrdenados;
+    }
+
+    public AlertaDTO popularAlertaDTO(Consulta consulta){
+        AlertaDTO alertaDTO = new AlertaDTO();
+        alertaDTO.setIdPaciente(String.valueOf(consulta.getPaciente().getIdPaciente()));
+
+        alertaDTO.setNomePaciente(consulta.getPaciente().getNomePaciente());
+        alertaDTO.setTelefonePaciente(consulta.getPaciente().getTelefonePaciente());
+        alertaDTO.setScoreDeRisco(consulta.getPaciente().getScoreDeRisco());
+        alertaDTO.setIdConsulta(String.valueOf(consulta.getIdConsulta()));
+        alertaDTO.setNomeMedico(consulta.getProfissional().getNomeProfissional());
+        alertaDTO.setEspecialidadeConsulta(consulta.getEspecialidade().getNomeEspecialidade());
+        alertaDTO.setHoraConsulta(consulta.getDataAgenda().toLocalTime().toString());
+
+        buscarUltimoAlertaServiceAtivo(alertaDTO);
+        return alertaDTO;
     }
 
     public void buscarUltimoAlertaServiceAtivo(AlertaDTO alertaDTO){

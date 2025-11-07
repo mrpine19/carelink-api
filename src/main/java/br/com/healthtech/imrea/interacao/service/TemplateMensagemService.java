@@ -47,11 +47,7 @@ public class TemplateMensagemService {
                 .add(Json.createObjectBuilder()
                         .add("type", "quick_reply")
                         .add("title", "❌ Preciso reagendar/cancelar")
-                        .add("id", "CONFIRM_PRESENCE_NAO"))
-                .add(Json.createObjectBuilder()
-                        .add("type", "quick_reply")
-                        .add("title", "❓ Tenho dúvidas sobre o acesso")
-                        .add("id", "CONFIRM_DUVIDA_ACESSO"));
+                        .add("id", "CONFIRM_PRESENCE_NAO"));
 
         JsonObject action = Json.createObjectBuilder()
                 .add("buttons", buttonsArrayBuilder)
@@ -79,6 +75,31 @@ public class TemplateMensagemService {
                 "*Precisa de ajuda imediata?* Responda AGORA a esta mensagem com a palavra 'AJUDA' para que nosso assistente possa te auxiliar.",
                 nomeDestinatario, consulta.getProfissional().getNomeProfissional(), consulta.getEspecialidade().getNomeEspecialidade(), horaFormatada,
                 consulta.getEspecialidade().getLinkConsultaEspecialidade(), consulta.getCodigoConsulta());
+
+        return Json.createObjectBuilder()
+                .add("body", body)
+                .build();
+
+    }
+
+    public JsonObject construirMensagemConfirmarConsulta() {
+
+        String body = "✅ *Confirmação Registrada!*\n\n" +
+                        "Obrigado! Sua presença na consulta está confirmada.\n\n" +
+                        "Iremos enviar o link de acesso e as instruções necessárias 1 hora antes da sua consulta. Conte com o CareLink!";
+
+        return Json.createObjectBuilder()
+                .add("body", body)
+                .build();
+
+    }
+
+    public JsonObject construirMensagemReagendarConsulta() {
+
+        String body = "⏳ Solicitação Recebida.\n\n" +
+                                "Entendemos que você precisa reagendar/cancelar a sua consulta.\n\n" +
+                                "Seu agendamento foi registrado como **pendente**.\n\n" +
+                                "Aguarde: Um membro da nossa equipe do IMREA entrará em contato com você em breve para confirmar o motivo e providenciar o reagendamento ou cancelamento, de acordo com a sua necessidade. Agradecemos sua colaboração!";
 
         return Json.createObjectBuilder()
                 .add("body", body)

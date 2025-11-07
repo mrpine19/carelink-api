@@ -46,7 +46,8 @@ public class AgendamentoMapper {
         Paciente paciente = new Paciente(
                 registro.getNomePaciente(),
                 registro.getNumeroPaciente(),
-                LocalDate.parse(registro.getDataNascimentoPaciente(), DATE_FORMATTER)
+                LocalDate.parse(registro.getDataNascimentoPaciente(), DATE_FORMATTER),
+                registro.getAfinidadeDigital()
         );
 
         Cuidador cuidador = new Cuidador(registro.getNomeAcompanhante(), registro.getNumeroAcompanhante());
@@ -61,7 +62,7 @@ public class AgendamentoMapper {
         return profissionalService.buscarOuCriarMedico(profissional);
     }
 
-    public void salvarInformacoesConsulta(RegistroAgendamento registro, Paciente paciente, Profissional profissional, UploadLog uploadLog){
+    public Consulta salvarInformacoesConsulta(RegistroAgendamento registro, Paciente paciente, Profissional profissional, UploadLog uploadLog){
         LocalDateTime dataAgenda = LocalDateTime.parse(registro.getDataAgendamento() + " " + registro.getHoraAgendamento(), DATE_TIME_FORMATTER);
 
         Consulta consulta = new Consulta(
@@ -73,8 +74,10 @@ public class AgendamentoMapper {
         );
 
         consulta.setEspecialidade(especialidadeService.buscarOuCriarEspecialidade(registro.getEspecialidade()));
+        consulta.setPacienteConfirmouPresenca("N");
+        consulta.setPacientePrecisaReagendar("N");
         consulta.setUploadLog(uploadLog);
 
-        consultaService.buscarOuCriarConsulta(consulta);
+        return consultaService.buscarOuCriarConsulta(consulta);
     }
 }
