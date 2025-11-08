@@ -247,4 +247,8 @@ public class ConsultaService {
     public List<Consulta> buscarConsultasParaReagendar() {
         return Consulta.find("pacientePrecisaReagendar = 'S'").list();
     }
+
+    public Consulta buscarConsultaMaisRecentePorPaciente(Paciente paciente) {
+        return Consulta.find("paciente = ?1 order by dataAgenda desc", paciente).firstResult();
+    }
 }

@@ -84,6 +84,31 @@ public class InteracaoAutomatizadaService {
         }
     }
 
+    public void enviarLembrete(Consulta consulta, TipoInteracao tipo) {
+        try {
+            Paciente paciente = consulta.getPaciente();
+            logger.debug("Iniciando processo de lembrete para a consulta {}", consulta.getIdConsulta());
+
+            // 1. Envia para o paciente
+            enviarMensagemParaDestinatario(consulta, tipo, paciente.getNomePaciente(), paciente.getTelefonePaciente());
+
+            // 2. Envia para os cuidadores, se existirem
+            Set<Cuidador> cuidadores = paciente.getCuidadores();
+            String receptorTipo = "PACIENTE";
+            if (cuidadores == null || cuidadores.isEmpty() || cuidadores.stream().allMatch(c -> c == null)) {
+                logger.warn("Paciente {} não possui cuidadores para a consulta {}", paciente.getNomePaciente(), consulta.getIdConsulta());
+            } else {
+                enviarMensagensParaCuidadores(consulta, tipo);
+                receptorTipo = "AMBOS";
+            }
+
+            // 3. Registra que a interação ocorreu
+            //registrarInteracao(consulta, tipo, receptorTipo);
+        } catch (Exception e) {
+            logger.error("Falha crítica no processo de envio de lembrete para a consulta {}: {}", consulta.getIdConsulta(), e.getMessage(), e);
+        }
+    }
+
     private void enviarMensagensParaCuidadores(Consulta consulta, TipoInteracao tipo) {
         for (Cuidador cuidador : consulta.getPaciente().getCuidadores()) {
             try {

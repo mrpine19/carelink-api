@@ -107,4 +107,8 @@ public class PacienteService {
     public Paciente buscarPacientePorTelefone(String telefonePaciente) {
         return Paciente.find("telefonePaciente = ?1", telefonePaciente).firstResult();
     }
+
+    public Paciente buscarPacientePorId(int id) {
+        return Paciente.findById(id);
+    }
 }

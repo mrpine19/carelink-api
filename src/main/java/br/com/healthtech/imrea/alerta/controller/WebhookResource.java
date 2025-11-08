@@ -34,7 +34,7 @@ public class WebhookResource {
     @Inject
     TemplateMensagemService templateService;
 
-    private static final String PYTHON_API_URL = "http://127.0.0.1:5000/ask";
+    private static final String PYTHON_API_URL = "https://carelink-bot-whatsapp.onrender.com/ask";
 
     @POST
     @Path("/send-message")
@@ -64,7 +64,7 @@ public class WebhookResource {
                 JsonArray messages = jsonPayload.getJsonArray("messages");
                 for (JsonObject message : messages.getValuesAs(JsonObject.class)) {
                     // Garante que não é uma mensagem enviada pelo próprio bot
-                    if (!message.getBoolean("from_me", false)) {
+                    if (!message.getBoolean("from_me", false) && !message.containsKey("reply")) {
                         String telefonePaciente = message.getString("from");
                         String mensagemPaciente = message.getJsonObject("text").getString("body");
 

@@ -1,14 +1,18 @@
 package br.com.healthtech.imrea.alerta.service;
 
+import br.com.healthtech.imrea.consulta.domain.Consulta;
 import br.com.healthtech.imrea.consulta.service.ConsultaService;
 import br.com.healthtech.imrea.interacao.domain.TipoInteracao;
 import br.com.healthtech.imrea.interacao.service.TemplateMensagemService;
+import br.com.healthtech.imrea.paciente.domain.Paciente;
+import br.com.healthtech.imrea.paciente.service.PacienteService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
+import org.eclipse.microprofile.config.inject.ConfigProperty; // Importar ConfigProperty
 
 import java.io.StringReader;
 import java.net.URI;
@@ -29,7 +33,12 @@ public class AlertaService {
     @Inject
     TemplateMensagemService templateService;
 
-    private static final String PYTHON_API_URL = "https://carelink-bot-whatsapp.onrender.com/ask";
+    @Inject
+    PacienteService pacienteService;
+
+    @Inject
+    @ConfigProperty(name = "python.rag.api.url", defaultValue = "http://127.0.0.1:5000/ask")
+    String urlApiPython;
 
     public void processarMensagemWebhook(String payload) {
         try (JsonReader reader = Json.createReader(new StringReader(payload))) {
@@ -99,7 +108,7 @@ public class AlertaService {
         );
 
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(PYTHON_API_URL))
+                .uri(URI.create(urlApiPython)) // Usando a variável injetada
                 .header("Content-Type", "application/json")
                 .timeout(Duration.ofSeconds(30))
                 .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
@@ -152,5 +161,52 @@ public class AlertaService {
         } else {
             throw new IllegalArgumentException("Formato de telefone não suportado: " + telefone);
         }
+    }
+
+    public void enviarLembretePaciente(String idPaciente) {
+        Paciente paciente = pacienteService.buscarPacientePorId(Integer.parseInt(idPaciente));
+        if (paciente == null) {
+            System.err.println("Erro: Paciente com ID " + idPaciente + " não encontrado.");
+            // Opcional: lançar uma exceção ou retornar um erro mais específico
+            return;
+        }
+
+        Consulta consulta = consultaService.buscarConsultaMaisRecentePorPaciente(paciente);
+        if (consulta == null) {
+            System.err.println("Erro: Nenhuma consulta recente encontrada para o paciente com ID " + idPaciente + ".");
+            // Opcional: lançar uma exceção ou retornar um erro mais específico
+            return;
+        }
+
+        String telefonePaciente = normalizarTelefone(paciente.getTelefonePaciente()); // Assumindo que Paciente tem um método getTelefone()
+        if (telefonePaciente.isEmpty()) {
+            System.err.println("Erro: Telefone do paciente com ID " + idPaciente + " não encontrado.");
+            return;
+        }
+
+        // 1. Construir o conteúdo da mensagem usando o templateService
+        JsonObject mensagemConteudo = templateService.construirMensagem(consulta, paciente.getNomePaciente(), TipoInteracao.LEMBRETE_1H);
+
+        // 2. Criar o payload final adicionando a propriedade "to"
+        JsonObject payloadFinal = Json.createObjectBuilder(mensagemConteudo)
+                .add("to", telefonePaciente) // Adiciona o telefone do paciente como destinatário
+                .build();
+
+        // 3. Enviar a mensagem
+        chatbotService.enviarMensagem(payloadFinal, TipoInteracao.LEMBRETE_1H);
+        System.out.println("Lembrete enviado com sucesso para o paciente: " + paciente.getNomePaciente() + " (" + telefonePaciente + ")");
+    }
+
+    private String normalizarTelefone(String telefone) {
+        if (telefone == null || telefone.isBlank()) {
+            return "";
+        }
+        String apenasDigitos = telefone.replaceAll("\\D", "");
+
+        if (apenasDigitos.length() >= 10 && !apenasDigitos.startsWith("55")) {
+            return "55" + apenasDigitos;
+        }
+
+        return apenasDigitos;
     }
 }

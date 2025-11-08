@@ -9,6 +9,7 @@ import jakarta.json.JsonReader;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam; // Importar PathParam
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
@@ -36,8 +37,8 @@ public class AlertaController {
             // Em um cenário real, é fundamental logar a exceção em um sistema de logs
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                           .entity("Erro ao processar webhook: " + e.getMessage())
-                           .build();
+                    .entity("Erro ao processar webhook: " + e.getMessage())
+                    .build();
         }
     }
 
@@ -59,8 +60,30 @@ public class AlertaController {
 
         } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST)
-                           .entity("Erro ao processar a requisição: " + e.getMessage())
-                           .build();
+                    .entity("Erro ao processar a requisição: " + e.getMessage())
+                    .build();
+        }
+    }
+
+    /**
+     * Endpoint para reenviar um lembrete para um paciente específico.
+     * Recebe o ID do paciente como um parâmetro de caminho (path parameter).
+     */
+    @POST
+    @Path("/enviar-lembrete/{idPaciente}") // idPaciente como path parameter
+    // Não precisa de @Consumes(MediaType.APPLICATION_JSON) se não há corpo JSON
+    public Response enviarLembrete(@PathParam("idPaciente") String idPaciente) { // Recebe como @PathParam
+        try {
+            // Delega a lógica de negócio para o AlertaService
+            alertaService.enviarLembretePaciente(idPaciente);
+
+            return Response.ok("Lembrete enviado com sucesso para o paciente: " + idPaciente).build();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Erro ao reenviar lembrete: " + e.getMessage())
+                    .build();
         }
     }
 }
