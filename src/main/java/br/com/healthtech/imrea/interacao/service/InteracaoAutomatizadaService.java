@@ -103,7 +103,7 @@ public class InteracaoAutomatizadaService {
             }
 
             // 3. Registra que a interação ocorreu
-            //registrarInteracao(consulta, tipo, receptorTipo);
+            registrarInteracao(consulta, tipo, receptorTipo);
         } catch (Exception e) {
             logger.error("Falha crítica no processo de envio de lembrete para a consulta {}: {}", consulta.getIdConsulta(), e.getMessage(), e);
         }

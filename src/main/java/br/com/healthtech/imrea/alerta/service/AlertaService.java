@@ -37,7 +37,7 @@ public class AlertaService {
     PacienteService pacienteService;
 
     @Inject
-    @ConfigProperty(name = "python.rag.api.url", defaultValue = "http://127.0.0.1:5000/ask")
+    @ConfigProperty(name = "python.rag.api.url")
     String urlApiPython;
 
     public void processarMensagemWebhook(String payload) {
