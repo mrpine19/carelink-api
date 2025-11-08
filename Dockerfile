@@ -12,6 +12,8 @@ RUN javac -version
 RUN mvn -v
 # Constrói o projeto Quarkus, pulando os testes
 RUN mvn clean package -DskipTests
+# Adiciona comando para listar o conteúdo de target/quarkus-app
+RUN ls -R target/quarkus-app/
 
 # Stage 2: Run the application
 # Usa uma imagem OpenJDK 21 slim para a imagem final, que é menor
@@ -21,6 +23,8 @@ WORKDIR /app
 COPY --from=build /app/target/quarkus-app/lib/ /app/lib/
 COPY --from=build /app/target/quarkus-app/*.jar /app/
 COPY --from=build /app/target/quarkus-app/app/ /app/app/
+# Copia o diretório 'quarkus' que contém o quarkus-application.dat
+COPY --from=build /app/target/quarkus-app/quarkus/ /app/quarkus/
 # Expõe a porta que o Quarkus usa por padrão (8080)
 EXPOSE 8080
 # Comando para iniciar a aplicação
