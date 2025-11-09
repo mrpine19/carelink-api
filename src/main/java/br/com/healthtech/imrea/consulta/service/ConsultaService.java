@@ -6,10 +6,8 @@ import br.com.healthtech.imrea.consulta.dto.ConsultaUpdateDTO;
 import br.com.healthtech.imrea.interacao.dto.InteracaoConsultaDTO;
 import br.com.healthtech.imrea.paciente.domain.Paciente;
 import br.com.healthtech.imrea.paciente.dto.ConsultaPacienteDTO;
-import br.com.healthtech.imrea.paciente.service.PacienteService;
 import jakarta.enterprise.context.ApplicationScoped;
 import br.com.healthtech.imrea.paciente.domain.Cuidador;
-import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,8 +20,6 @@ import java.util.List;
 @ApplicationScoped
 public class ConsultaService {
 
-    @Inject
-    PacienteService pacienteService;
 
     private static final Logger logger = LoggerFactory.getLogger(ConsultaService.class);
 
@@ -52,24 +48,9 @@ public class ConsultaService {
         }
     }
 
-    public List<Consulta> buscarConsultasMarcadasDiaSeguinte() {
-        LocalDate amanha = LocalDate.now().plusDays(1);
-        LocalDateTime inicioDoDia = amanha.atStartOfDay();
-        LocalDateTime fimDoDia = amanha.atTime(LocalTime.MAX);
-
-        return Consulta.find("dataAgenda >= ?1 and dataAgenda <= ?2", inicioDoDia, fimDoDia).list();
-    }
-
     public List<Consulta> buscarConsultasMarcadasHoje() {
         LocalDate hoje = LocalDate.now();
         return Consulta.find("dataAgenda >= ?1 and dataAgenda <= ?2", hoje.atStartOfDay(), hoje.atTime(LocalTime.MAX)).list();
-    }
-
-    public List<Consulta> buscarConsultasMarcadasProximaHora() {
-        LocalDateTime agora = LocalDateTime.now();
-        LocalDateTime proximaHora = LocalDateTime.now().plusHours(1);
-
-        return Consulta.find("dataAgenda >= ?1 and dataAgenda <= ?2", agora, proximaHora).list();
     }
 
     public ConsultaPacienteDTO buscaProximaConsultaPorPaciente(Long idPaciente) {
@@ -95,14 +76,6 @@ public class ConsultaService {
 
     public List<Consulta> buscarConsultasPorPaciente(Long idPaciente) {
         return Consulta.find("paciente.idPaciente = ?1 order by dataAgenda desc", idPaciente).list();
-    }
-
-    public Consulta buscarConsultaMaisRecenteRealizada(Long idPaciente) {
-        return Consulta.find("paciente.idPaciente = ?1 AND statusConsulta = 'REALIZADA' order by dataAgenda desc", idPaciente).firstResult();
-    }
-
-    public List<Consulta> buscarConsultasPassadasParaTaxa(Long idPaciente) {
-        return Consulta.find("paciente.idPaciente = ?1 AND NOT statusConsulta = 'CANCELADA' order by dataAgenda desc", idPaciente).list();
     }
 
     public List<InteracaoConsultaDTO> buscarHistoricoConulstasPorPaciente(Long idPaciente) {
@@ -195,60 +168,5 @@ public class ConsultaService {
 
     private void atualizarStatusPrecisaReagendar(Consulta consulta) {
         Consulta.update("pacientePrecisaReagendar = 'N' where paciente = ?1", consulta.getPaciente());
-    }
-
-    @Transactional
-    public void confirmarPresenca(String telefonePaciente) {
-        Paciente paciente = pacienteService.buscarPacientePorTelefone(telefonePaciente);
-        if (paciente == null) {
-            logger.warn("Paciente com telefone {} não encontrado para confirmação de presença.", telefonePaciente);
-            return;
-        }
-
-        LocalDateTime inicioDoDia = LocalDate.now().atStartOfDay();
-        LocalDateTime fimDoProximoDia = LocalDate.now().atTime(LocalTime.MAX).plusDays(1);
-
-        Consulta consulta = Consulta.find("paciente.idPaciente = ?1 and dataAgenda >= ?2 and dataAgenda <= ?3",
-                paciente.getIdPaciente(), inicioDoDia, fimDoProximoDia).firstResult();
-
-        if (consulta == null) {
-            logger.warn("Nenhuma consulta encontrada para o paciente {} na data de hoje para confirmação de presença.", paciente.getNomePaciente());
-            return;
-        }
-
-        consulta.setPacienteConfirmouPresenca("S");
-        paciente.setScoreDeRisco(paciente.getScoreDeRisco() - 200);
-        logger.info("Presença confirmada para o paciente {} na consulta marcada para {}.", paciente.getNomePaciente(), consulta.getDataAgenda());
-    }
-
-    @Transactional
-    public void pacientePrecisaReagendar(String telefonePaciente) {
-        Paciente paciente = pacienteService.buscarPacientePorTelefone(telefonePaciente);
-
-        if (paciente == null) {
-            logger.warn("Paciente com telefone {} não encontrado para remarcar consulta.", telefonePaciente);
-            return;
-        }
-
-        LocalDateTime inicioDoDia = LocalDate.now().atStartOfDay();
-        LocalDateTime fimDoProximoDia = LocalDate.now().atTime(LocalTime.MAX).plusDays(1);
-
-        Consulta consulta = Consulta.find("paciente.idPaciente = ?1 and dataAgenda >= ?2 and dataAgenda <= ?3",
-                paciente.getIdPaciente(), inicioDoDia, fimDoProximoDia).firstResult();
-
-        if (consulta == null) {
-            logger.warn("Nenhuma consulta encontrada para o paciente {} na data de hoje para remarcar a consulta.", paciente.getNomePaciente());
-            return;
-        }
-
-        consulta.setPacientePrecisaReagendar("S");
-    }
-
-    public List<Consulta> buscarConsultasParaReagendar() {
-        return Consulta.find("pacientePrecisaReagendar = 'S'").list();
-    }
-
-    public Consulta buscarConsultaMaisRecentePorPaciente(Paciente paciente) {
-        return Consulta.find("paciente = ?1 order by dataAgenda desc", paciente).firstResult();
     }
 }

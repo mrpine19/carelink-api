@@ -3,10 +3,6 @@ package br.com.healthtech.imrea.agendamento.service;
 import br.com.healthtech.imrea.agendamento.domain.Profissional;
 import br.com.healthtech.imrea.agendamento.domain.RegistroAgendamento;
 import br.com.healthtech.imrea.agendamento.domain.UploadLog;
-import br.com.healthtech.imrea.consulta.domain.Consulta;
-import br.com.healthtech.imrea.ia.service.ScoreDeRiscoService;
-import br.com.healthtech.imrea.interacao.domain.TipoInteracao;
-import br.com.healthtech.imrea.interacao.service.InteracaoAutomatizadaService;
 import br.com.healthtech.imrea.paciente.domain.Paciente;
 import br.com.healthtech.imrea.usuario.service.UsuarioService;
 import com.alibaba.excel.EasyExcel;
@@ -18,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,12 +28,6 @@ public class UploadPlanilhaService {
 
     @Inject
     UsuarioService usuarioService;
-
-    @Inject
-    ScoreDeRiscoService scoreDeRiscoService;
-
-    @Inject
-    InteracaoAutomatizadaService interacaoAutomatizadaService;
 
     @Transactional
     public List<RegistroAgendamento> processarPlanilha(FileUpload fileUpload) {
@@ -114,10 +103,8 @@ public class UploadPlanilhaService {
     @Transactional
     public void processarUmRegistroComTransacao(RegistroAgendamento registro, UploadLog uploadLog) {
         Paciente paciente = agendamentoMapper.salvarInformacoesPaciente(registro);
-        paciente.setScoreDeRisco(scoreDeRiscoService.calculaScoreDeRisco(paciente, registro.getEspecialidade()));
 
         Profissional profissional = agendamentoMapper.salvarInformacoesProfissional(registro);
-        Consulta consulta = agendamentoMapper.salvarInformacoesConsulta(registro, paciente, profissional, uploadLog);
-        interacaoAutomatizadaService.enviarLembrete(consulta, TipoInteracao.LEMBRETE_24H);
+        agendamentoMapper.salvarInformacoesConsulta(registro, paciente, profissional, uploadLog);
     }
 }

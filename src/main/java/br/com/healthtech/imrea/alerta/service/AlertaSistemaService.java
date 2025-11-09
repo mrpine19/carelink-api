@@ -38,24 +38,10 @@ public class AlertaSistemaService {
         }
         orderarListaDeAlertas(alertas);
 
-        List<Consulta> consultasParaReagendar = consultaService.buscarConsultasParaReagendar();
-
-        List<AlertaDTO> alertasOrdenados = new ArrayList<>();
-        if (consultasParaReagendar != null && !consultasParaReagendar.isEmpty()){
-            for (Consulta consulta : consultasParaReagendar){
-                AlertaDTO alertaDTO = popularAlertaDTO(consulta);
-
-                alertaDTO.setScoreDeRisco(1000);
-                alertaDTO.setNivelDeRisco(AlertaDTO.NivelRisco.CRITICO);
-                alertasOrdenados.add(alertaDTO);
-            }
-        }
-        alertasOrdenados.addAll(alertas);
-
-        if(alertasOrdenados.isEmpty())
+        if(alertas.isEmpty())
             throw new IllegalArgumentException("Não há consultas marcadas hoje");
 
-        return alertasOrdenados;
+        return alertas;
     }
 
     public AlertaDTO popularAlertaDTO(Consulta consulta){
